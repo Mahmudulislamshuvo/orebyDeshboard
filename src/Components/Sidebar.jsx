@@ -18,6 +18,9 @@ import {
   Cog6ToothIcon,
   InboxIcon,
   PowerIcon,
+  HomeIcon,
+  ViewColumnsIcon,
+  CircleStackIcon,
 } from "@heroicons/react/24/solid";
 import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
@@ -54,10 +57,10 @@ const Sidebar = () => {
                 className="border-b-0 p-3"
               >
                 <ListItemPrefix>
-                  <PresentationChartBarIcon className="h-5 w-5" />
+                  <HomeIcon class="h-6 w-6" />
                 </ListItemPrefix>
                 <Typography color="blue-gray" className="mr-auto font-normal">
-                  Dashboard
+                  Home
                 </Typography>
               </AccordionHeader>
             </ListItem>
@@ -65,21 +68,15 @@ const Sidebar = () => {
               <List className="p-0">
                 <ListItem>
                   <ListItemPrefix>
-                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                    <ViewColumnsIcon class="h-6 w-6" />
                   </ListItemPrefix>
-                  Analytics
+                  Banner
                 </ListItem>
                 <ListItem>
                   <ListItemPrefix>
-                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                    <CircleStackIcon class="h-6 w-6" />
                   </ListItemPrefix>
-                  Reporting
-                </ListItem>
-                <ListItem>
-                  <ListItemPrefix>
-                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                  </ListItemPrefix>
-                  Projects
+                  Category
                 </ListItem>
               </List>
             </AccordionBody>
