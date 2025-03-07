@@ -23,6 +23,7 @@ import {
   CircleStackIcon,
 } from "@heroicons/react/24/solid";
 import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = React.useState(0);
@@ -66,18 +67,22 @@ const Sidebar = () => {
             </ListItem>
             <AccordionBody className="py-1">
               <List className="p-0">
-                <ListItem>
-                  <ListItemPrefix>
-                    <ViewColumnsIcon class="h-6 w-6" />
-                  </ListItemPrefix>
-                  Banner
-                </ListItem>
-                <ListItem>
-                  <ListItemPrefix>
-                    <CircleStackIcon class="h-6 w-6" />
-                  </ListItemPrefix>
-                  Category
-                </ListItem>
+                <Link to={"/banner"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <ViewColumnsIcon class="h-6 w-6" />
+                    </ListItemPrefix>
+                    Banner
+                  </ListItem>
+                </Link>
+                <Link to={"/category"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <CircleStackIcon class="h-6 w-6" />
+                    </ListItemPrefix>
+                    Category
+                  </ListItem>
+                </Link>
               </List>
             </AccordionBody>
           </Accordion>

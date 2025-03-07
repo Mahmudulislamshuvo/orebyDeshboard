@@ -3,25 +3,24 @@ import {
   createRoutesFromElements,
   createBrowserRouter,
   Route,
+  Outlet,
+  RouterProvider,
 } from "react-router-dom";
 import Home from "./Pages/Home";
+import Banner from "./Components/Banner/Banner";
+import Category from "./Components/Category/Category";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Home />}>
-      <Route path="/products" element={"This is home page"}></Route>
+      <Route path="/banner" element={<Banner />}></Route>
+      <Route path="/category" element={<Category />}></Route>
     </Route>
   )
 );
 
 function App() {
-  return (
-    <>
-      <div>
-        <Sidebar />
-      </div>
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
