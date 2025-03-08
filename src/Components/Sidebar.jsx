@@ -24,6 +24,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import { TbCategoryPlus } from "react-icons/tb";
 
 const Sidebar = () => {
   const [open, setOpen] = React.useState(0);
@@ -81,6 +82,14 @@ const Sidebar = () => {
                       <CircleStackIcon className="h-6 w-6" />
                     </ListItemPrefix>
                     Category
+                  </ListItem>
+                </Link>
+                <Link to={"/subcategory"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <TbCategoryPlus className="h-6 w-6" />
+                    </ListItemPrefix>
+                    Sub Category
                   </ListItem>
                 </Link>
               </List>

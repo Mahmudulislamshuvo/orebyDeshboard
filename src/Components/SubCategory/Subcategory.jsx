@@ -1,23 +1,33 @@
-import { Button, Input, Textarea } from "@material-tailwind/react";
-import React from "react";
-import Fileinput from "../Banner/Fileinput";
-import TableWithActions from "../Banner/TableWIthAction";
 import {
+  Button,
   Dialog,
   DialogBody,
   DialogFooter,
   DialogHeader,
+  Input,
   Typography,
 } from "@material-tailwind/react";
+import React from "react";
+import TableWithActions from "../Banner/TableWIthAction";
+import { Select, Option } from "@material-tailwind/react";
+import Fileinput from "../Banner/Fileinput";
 
-const Category = () => {
+const Subcategory = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(!open);
   return (
     <div>
       <div className="flex flex-col gap-y-5">
         <Input label="Category Name" />
-        <Textarea color="green" label="Description" />
+        <div className="w-full text-lg">
+          <Select label="Select Category">
+            <Option>Material Tailwind HTML</Option>
+            <Option>Material Tailwind React</Option>
+            <Option>Material Tailwind Vue</Option>
+            <Option>Material Tailwind Angular</Option>
+            <Option>Material Tailwind Svelte</Option>
+          </Select>
+        </div>
         <Button
           variant="filled"
           loading={false}
@@ -29,7 +39,8 @@ const Category = () => {
           Upload
         </Button>
       </div>
-      <TableWithActions hightforTable={"470px"} handleOpen={handleOpen} />
+      <TableWithActions hightforTable={"550px"} handleOpen={handleOpen} />
+      {/* Dialog for managing item */}
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
@@ -55,4 +66,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Subcategory;
