@@ -5,7 +5,7 @@ import TableWithActions from "./TableWIthAction";
 
 const Banner = () => {
   return (
-    <div>
+    <>
       <div className="pt-5">
         <Input label="Banner title" />
         <div className="pt-5">
@@ -15,7 +15,7 @@ const Banner = () => {
           <Button
             variant="filled"
             loading={false}
-            className="w-[20%]"
+            className="w-[20%] text-lg"
             type="submit"
             form="mainForm"
             color="green"
@@ -27,7 +27,7 @@ const Banner = () => {
           <TableWithActions />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
