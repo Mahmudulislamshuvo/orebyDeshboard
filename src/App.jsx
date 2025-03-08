@@ -1,9 +1,7 @@
-import Sidebar from "./Components/Sidebar";
 import {
   createRoutesFromElements,
   createBrowserRouter,
   Route,
-  Outlet,
   RouterProvider,
 } from "react-router-dom";
 import Home from "./Pages/Home";

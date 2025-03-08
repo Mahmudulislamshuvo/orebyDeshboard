@@ -58,7 +58,7 @@ const Sidebar = () => {
                 className="border-b-0 p-3"
               >
                 <ListItemPrefix>
-                  <HomeIcon class="h-6 w-6" />
+                  <HomeIcon className="h-6 w-6" />
                 </ListItemPrefix>
                 <Typography color="blue-gray" className="mr-auto font-normal">
                   Home
@@ -70,7 +70,7 @@ const Sidebar = () => {
                 <Link to={"/banner"}>
                   <ListItem>
                     <ListItemPrefix>
-                      <ViewColumnsIcon class="h-6 w-6" />
+                      <ViewColumnsIcon className="h-6 w-6" />
                     </ListItemPrefix>
                     Banner
                   </ListItem>
@@ -78,7 +78,7 @@ const Sidebar = () => {
                 <Link to={"/category"}>
                   <ListItem>
                     <ListItemPrefix>
-                      <CircleStackIcon class="h-6 w-6" />
+                      <CircleStackIcon className="h-6 w-6" />
                     </ListItemPrefix>
                     Category
                   </ListItem>
