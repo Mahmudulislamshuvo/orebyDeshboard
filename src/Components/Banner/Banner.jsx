@@ -24,7 +24,7 @@ const Banner = () => {
           <Button
             variant="filled"
             loading={false}
-            className="w-[15%] text-lg"
+            className="w-[15%] text-sm"
             type="submit"
             form="mainForm"
             color="green"

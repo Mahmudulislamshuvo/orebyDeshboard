@@ -21,7 +21,7 @@ const Category = () => {
         <Button
           variant="filled"
           loading={false}
-          className="w-[20%] text-lg"
+          className="w-[15%] text-sm"
           type="submit"
           form="mainForm"
           color="green"
@@ -33,14 +33,15 @@ const Category = () => {
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
-            Manage Item
+            Manage Category
           </Typography>
-          <Typography className="mt-1 font-normal text-gray-600">
+          {/* <Typography className="mt-1 font-normal text-gray-600">
             Keep your records up-to-date and organized.
-          </Typography>
+          </Typography> */}
         </DialogHeader>
         <DialogBody className="space-y-4 pb-6">
-          <Fileinput />
+          <Input label="Category Name" />
+          <Textarea color="green" label="Description" />
         </DialogBody>
         <DialogFooter>
           <div className="flex gap-x-5">
