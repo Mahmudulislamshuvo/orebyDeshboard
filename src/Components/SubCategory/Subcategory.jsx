@@ -51,7 +51,7 @@ const Subcategory = () => {
           </Typography>
         </DialogHeader>
         <DialogBody className="space-y-4 pb-6">
-          <Input label="Category Name" />
+          <Input label="SubCategory Name" />
           <div className="w-full text-lg">
             <Select label="Select Category">
               <Option>Material Tailwind HTML</Option>

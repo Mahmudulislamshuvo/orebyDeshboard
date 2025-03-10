@@ -25,6 +25,8 @@ import {
 import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { TbCategoryPlus } from "react-icons/tb";
+import { FcSalesPerformance } from "react-icons/fc";
+import { FaProductHunt, FaSalesforce } from "react-icons/fa";
 
 const Sidebar = () => {
   const [open, setOpen] = React.useState(0);
@@ -92,6 +94,22 @@ const Sidebar = () => {
                     Sub Category
                   </ListItem>
                 </Link>
+                <Link to={"/flashsale"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <FcSalesPerformance className="h-6 w-6" />
+                    </ListItemPrefix>
+                    Flash Sale
+                  </ListItem>
+                </Link>
+                <Link to={"/bestselling"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <FaSalesforce className="h-6 w-6" />
+                    </ListItemPrefix>
+                    Best Selling
+                  </ListItem>
+                </Link>
               </List>
             </AccordionBody>
           </Accordion>
@@ -121,18 +139,14 @@ const Sidebar = () => {
             </ListItem>
             <AccordionBody className="py-1">
               <List className="p-0">
-                <ListItem>
-                  <ListItemPrefix>
-                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                  </ListItemPrefix>
-                  Orders
-                </ListItem>
-                <ListItem>
-                  <ListItemPrefix>
-                    <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                  </ListItemPrefix>
-                  Products
-                </ListItem>
+                <Link to={"/product"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <FaProductHunt className="h-5 w-5" />
+                    </ListItemPrefix>
+                    Products
+                  </ListItem>
+                </Link>
               </List>
             </AccordionBody>
           </Accordion>
