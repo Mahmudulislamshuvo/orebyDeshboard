@@ -8,27 +8,55 @@ const Product = () => {
   const { quill, quillRef } = useQuill();
 
   return (
-    <div className="flex flex-col gap-y-10">
-      <Input color="blue" label="Product Name" />
+    <div className="flex flex-col gap-y-5 p-5 max-w-7xl mx-auto">
+      {/* Product Name */}
       <div>
-        <div className="w-full h-[200px]">
+        <Input color="blue" label="Product Name" className="w-full" />
+      </div>
+
+      {/* Quill Editor */}
+      <div className="overflow-hidden">
+        <div className="w-full h-[200px] border rounded-md shadow-sm ">
           <div ref={quillRef} />
         </div>
       </div>
-      <div className="flex mt-11 justify-between">
-        <div className="w-[30%]">
-          <Fileinput />
+
+      {/* Form Section */}
+      <div className="flex gap-x-10">
+        {/* File Input Section */}
+        <div className="w-1/3">
+          <div className=" bg-white rounded-lg shadow-xl">
+            <Fileinput />
+          </div>
         </div>
-        <div className="flex flex-col w-[33%] gap-y-7">
-          <Input color="blue" label="Discount" />
-          <Input color="blue" label="Stock" />
-          <Input color="blue" label="Rating" />
-          <Input color="blue" label="Rating" />
+
+        {/* Input Fields Section */}
+        <div className="flex flex-col w-1/3 gap-y-6">
+          <div className="w-full">
+            <Input color="blue" label="Discount" className="w-full" />
+          </div>
+          <div className="w-full">
+            <Input color="blue" label="Stock" className="w-full" />
+          </div>
+          <div className="w-full">
+            <Input color="blue" label="Rating" className="w-full" />
+          </div>
         </div>
-        <div className="flex flex-col w-[33%] gap-y-10">
-          <Input color="blue" label="Price" type="number" placeholder="Price" />
-          <div className="w-full text-lg">
-            <Select label="Select Category">
+
+        {/* Select and Price Section */}
+        <div className="flex flex-col w-1/3 gap-y-6">
+          <div className="w-full">
+            <Input
+              color="blue"
+              label="Price"
+              type="number"
+              placeholder="Price"
+              className="w-full"
+            />
+          </div>
+
+          <div className="w-full">
+            <Select label="Select Category" className="w-full">
               <Option>Material Tailwind HTML</Option>
               <Option>Material Tailwind React</Option>
               <Option>Material Tailwind Vue</Option>
@@ -36,8 +64,9 @@ const Product = () => {
               <Option>Material Tailwind Svelte</Option>
             </Select>
           </div>
-          <div className="w-full text-lg">
-            <Select label="Select SubCategory">
+
+          <div className="w-full">
+            <Select label="Select SubCategory" className="w-full">
               <Option>Material Tailwind HTML</Option>
               <Option>Material Tailwind React</Option>
               <Option>Material Tailwind Vue</Option>
@@ -46,6 +75,13 @@ const Product = () => {
             </Select>
           </div>
         </div>
+      </div>
+
+      {/* Save/Submit Button */}
+      <div className="flex justify-center">
+        <button className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+          Save Product
+        </button>
       </div>
     </div>
   );

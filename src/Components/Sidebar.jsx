@@ -26,7 +26,7 @@ import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { TbCategoryPlus } from "react-icons/tb";
 import { FcSalesPerformance } from "react-icons/fc";
-import { FaProductHunt, FaSalesforce } from "react-icons/fa";
+import { FaFirstOrder, FaProductHunt, FaSalesforce } from "react-icons/fa";
 
 const Sidebar = () => {
   const [open, setOpen] = React.useState(0);
@@ -145,6 +145,16 @@ const Sidebar = () => {
                       <FaProductHunt className="h-5 w-5" />
                     </ListItemPrefix>
                     Products
+                  </ListItem>
+                </Link>
+              </List>
+              <List className="p-0">
+                <Link to={"/order"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <FaFirstOrder className="h-5 w-5" />
+                    </ListItemPrefix>
+                    Orders
                   </ListItem>
                 </Link>
               </List>
