@@ -12,6 +12,7 @@ import Flashsale from "./Components/FlashSales/Flashsale";
 import Bestselling from "./Components/BestSelings/Bestselling";
 import Product from "./Components/Products/Product";
 import Order from "./Components/Orders/Order";
+import Productlist from "./Components/ProductLists/Productlist";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
       <Route path="/bestselling" element={<Bestselling />}></Route>
       <Route path="/product" element={<Product />}></Route>
       <Route path="/order" element={<Order />}></Route>
+      <Route path="/productlist" element={<Productlist />}></Route>
     </Route>
   )
 );

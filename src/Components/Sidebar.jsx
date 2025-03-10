@@ -27,6 +27,7 @@ import { Link } from "react-router-dom";
 import { TbCategoryPlus } from "react-icons/tb";
 import { FcSalesPerformance } from "react-icons/fc";
 import { FaFirstOrder, FaProductHunt, FaSalesforce } from "react-icons/fa";
+import { CiBoxList } from "react-icons/ci";
 
 const Sidebar = () => {
   const [open, setOpen] = React.useState(0);
@@ -145,6 +146,16 @@ const Sidebar = () => {
                       <FaProductHunt className="h-5 w-5" />
                     </ListItemPrefix>
                     Products
+                  </ListItem>
+                </Link>
+              </List>
+              <List className="p-0">
+                <Link to={"/productlist"}>
+                  <ListItem>
+                    <ListItemPrefix>
+                      <CiBoxList className="h-5 w-5" />
+                    </ListItemPrefix>
+                    Product List
                   </ListItem>
                 </Link>
               </List>
