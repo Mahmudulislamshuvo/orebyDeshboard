@@ -13,6 +13,9 @@ import Bestselling from "./Components/BestSelings/Bestselling";
 import Product from "./Components/Products/Product";
 import Order from "./Components/Orders/Order";
 import Productlist from "./Components/ProductLists/Productlist";
+import OrderDetails from "./Components/OrderDetails/OrderDetails";
+import WelcomeText from "./Components/Welcome/WelcomText";
+import Inbox from "./Components/Inbox/Inbox";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,6 +28,9 @@ const router = createBrowserRouter(
       <Route path="/product" element={<Product />}></Route>
       <Route path="/order" element={<Order />}></Route>
       <Route path="/productlist" element={<Productlist />}></Route>
+      <Route path="/singleorder" element={<OrderDetails />}></Route>
+      <Route path="/inbox" element={<Inbox />}></Route>
+      <Route path="/" element={<WelcomeText />}></Route>
     </Route>
   )
 );
