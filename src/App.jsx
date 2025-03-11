@@ -16,22 +16,28 @@ import Productlist from "./Components/ProductLists/Productlist";
 import OrderDetails from "./Components/OrderDetails/OrderDetails";
 import WelcomeText from "./Components/Welcome/WelcomText";
 import Inbox from "./Components/Inbox/Inbox";
+import Login from "./Components/Login/Login";
+import Registration from "./Components/Registration/Registration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Home />}>
-      <Route path="/banner" element={<Banner />}></Route>
-      <Route path="/category" element={<Category />}></Route>
-      <Route path="/subcategory" element={<Subcategory />}></Route>
-      <Route path="/flashsale" element={<Flashsale />}></Route>
-      <Route path="/bestselling" element={<Bestselling />}></Route>
-      <Route path="/product" element={<Product />}></Route>
-      <Route path="/order" element={<Order />}></Route>
-      <Route path="/productlist" element={<Productlist />}></Route>
-      <Route path="/singleorder" element={<OrderDetails />}></Route>
-      <Route path="/inbox" element={<Inbox />}></Route>
-      <Route path="/" element={<WelcomeText />}></Route>
-    </Route>
+    <>
+      <Route path="/" element={<Home />}>
+        <Route path="/banner" element={<Banner />}></Route>
+        <Route path="/category" element={<Category />}></Route>
+        <Route path="/subcategory" element={<Subcategory />}></Route>
+        <Route path="/flashsale" element={<Flashsale />}></Route>
+        <Route path="/bestselling" element={<Bestselling />}></Route>
+        <Route path="/product" element={<Product />}></Route>
+        <Route path="/order" element={<Order />}></Route>
+        <Route path="/productlist" element={<Productlist />}></Route>
+        <Route path="/singleorder" element={<OrderDetails />}></Route>
+        <Route path="/inbox" element={<Inbox />}></Route>
+        <Route path="/" element={<WelcomeText />}></Route>
+      </Route>
+      <Route path="/login" element={<Login />}></Route>
+      <Route path="/signup" element={<Registration />}></Route>
+    </>
   )
 );
 

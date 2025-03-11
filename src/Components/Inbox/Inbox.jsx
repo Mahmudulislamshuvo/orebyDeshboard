@@ -108,14 +108,15 @@ const Inbox = () => {
               </div>
             </div>
 
-            <div className="py-6 pl-2 text-gray-700">
+            <div className="py-3 pl-2 text-gray-700">
               <h3 className="text-xl font-semibold">
                 {selectedMessage.sender}
               </h3>
-              <p className="mt-4">{selectedMessage.message}</p>
+              <span className="text-gray-500 ">{selectedMessage.email}</span>
+              <p className="mt-8">{selectedMessage.message}</p>
 
               {/* Reply Section */}
-              <div className="mt-6">
+              <div className="mt-12">
                 <div className="overflow-hidden shadow-xl">
                   <div className="w-full h-[200px] border rounded-md shadow-sm ">
                     <div ref={quillRef} />
