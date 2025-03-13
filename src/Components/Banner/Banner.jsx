@@ -9,9 +9,13 @@ import {
   DialogHeader,
   Typography,
 } from "@material-tailwind/react";
-import { useUploadBannerMutation } from "../../Features/Api/exclusiveApi";
+import {
+  useGetAllBannerQuery,
+  useUploadBannerMutation,
+} from "../../Features/Api/exclusiveApi";
 import { useForm } from "react-hook-form";
 import { SuccessToast } from "../../utils/Toastify";
+import SkeletonLoader from "../Skelitons/TableSkelitons";
 
 const Banner = () => {
   // todo: modal thing start
@@ -19,6 +23,12 @@ const Banner = () => {
   const handleOpen = () => setOpen(!open);
   // todo: modal thing end
   const [uploadBanner, { isLoading, isError }] = useUploadBannerMutation();
+  const {
+    data: bannerData,
+    isLoading: isGettingBannersLoading,
+    isError: getBannersError,
+  } = useGetAllBannerQuery();
+
   // React form hook
   const {
     register,
@@ -68,7 +78,12 @@ const Banner = () => {
           </div>
         </form>
         <div>
-          <TableWithActions hightforTable={"350px"} handleOpen={handleOpen} />
+          <TableWithActions
+            hightforTable={"350px"}
+            handleOpen={handleOpen}
+            data={bannerData?.data}
+            loading={isGettingBannersLoading}
+          />
         </div>
         <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
           <DialogHeader className="relative m-0 block">

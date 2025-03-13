@@ -1,46 +1,17 @@
 import React from "react";
 import { Button, Card, Typography } from "@material-tailwind/react";
+import moment from "moment/moment";
 
 const TABLE_HEAD = ["Title", "Banner", "Date", "Actions"];
-const TABLE_ROWS = [
-  {
-    name: "John Michael",
-    job: "Manager",
-    date: "23/04/18",
-  },
-  {
-    name: "Alexa Liras",
-    job: "Developer",
-    date: "23/04/18",
-  },
-  {
-    name: "Laurent Perrier",
-    job: "Executive",
-    date: "19/09/17",
-  },
-  {
-    name: "Michael Levi",
-    job: "Developer",
-    date: "24/12/08",
-  },
-  {
-    name: "Richard Gran",
-    job: "Manager",
-    date: "04/10/21",
-  },
-  {
-    name: "Laurent Perrier",
-    job: "Executive",
-    date: "19/09/17",
-  },
-  {
-    name: "Michael Levi",
-    job: "Developer",
-    date: "24/12/08",
-  },
-];
 
-const TableWithActions = ({ hightforTable = "500px", handleOpen }) => {
+const TableWithActions = ({
+  hightforTable = "500px",
+  handleOpen,
+  data,
+  loading,
+}) => {
+  const banners = Array.isArray(data) ? data : [];
+
   return (
     <div
       style={{ height: hightforTable }}
@@ -69,51 +40,65 @@ const TableWithActions = ({ hightforTable = "500px", handleOpen }) => {
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map(({ name, job, date }, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? "p-4 text-center"
-                  : "p-4 border-b border-blue-gray-50 text-center";
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="text-center p-4">
+                    Loading...
+                  </td>
+                </tr>
+              ) : banners.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="text-center p-4">
+                    No banners found
+                  </td>
+                </tr>
+              ) : (
+                banners.map(({ name, image, createdAt, _id }, index) => {
+                  const isLast = index === banners.length - 1;
+                  const classes = isLast
+                    ? "p-4 text-center"
+                    : "p-4 border-b border-blue-gray-50 text-center";
 
-                return (
-                  <tr key={name}>
-                    <td className={classes}>
-                      <Typography
-                        variant="lg"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {name}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="lg"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {job}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="lg"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {date}
-                      </Typography>
-                    </td>
-                    {/* Last column with action */}
-                    <td className="p-4 text-center flex gap-x-5 justify-center">
-                      <Button color="red">Delete</Button>
-                      <Button onClick={handleOpen} color="green">
-                        Edit
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
+                  return (
+                    <tr key={_id}>
+                      <td className={classes}>
+                        <Typography
+                          variant="lg"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {name}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <div className="flex justify-center">
+                          <img
+                            src={image}
+                            alt={image}
+                            className="h-[100px] w-[200px] object-cover rounded-xl"
+                          />
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="lg"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {moment(createdAt).fromNow()}
+                        </Typography>
+                      </td>
+                      {/* Last column with action */}
+                      <td className="p-4 text-center flex gap-x-5 justify-center">
+                        <Button color="red">Delete</Button>
+                        <Button onClick={handleOpen} color="green">
+                          Edit
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
