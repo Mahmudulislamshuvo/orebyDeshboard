@@ -9,29 +9,64 @@ import {
   DialogHeader,
   Typography,
 } from "@material-tailwind/react";
+import { useUploadBannerMutation } from "../../Features/Api/exclusiveApi";
+import { useForm } from "react-hook-form";
+import { SuccessToast } from "../../utils/Toastify";
 
 const Banner = () => {
+  // todo: modal thing start
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(!open);
+  // todo: modal thing end
+  const [uploadBanner, { isLoading, isError }] = useUploadBannerMutation();
+  // React form hook
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm();
+
+  const handlebanner = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", data?.image[0]);
+      formData.append("name", data?.name);
+      const response = await uploadBanner(formData);
+      if (response?.data?.success) {
+        SuccessToast("Banner uploaded succesfully");
+      }
+    } catch (error) {
+      console.log("error from banner.jsx upload banner", error);
+    }
+  };
+
   return (
     <>
       <div className="pt-5">
-        <Input label="Banner title" />
-        <div className="pt-5">
-          <Fileinput />
-        </div>
-        <div className="pt-5">
-          <Button
-            variant="filled"
-            loading={false}
-            className="w-[15%] text-sm"
-            type="submit"
-            form="mainForm"
-            color="green"
-          >
-            Upload
-          </Button>
-        </div>
+        <form onSubmit={handleSubmit(handlebanner)} id="mainForm">
+          <Input
+            label="Banner title"
+            {...register("name", { required: true, maxLength: 25 })}
+          />
+          {errors.name && (
+            <p className="text-red-400 pt-2">Banner name is required.</p>
+          )}
+          <div className="pt-5">
+            <Fileinput setValue={setValue} />
+          </div>
+          <div className="pt-5">
+            <Button
+              variant="filled"
+              loading={isLoading}
+              className="w-[15%] text-sm"
+              type="submit"
+              color="green"
+            >
+              Upload
+            </Button>
+          </div>
+        </form>
         <div>
           <TableWithActions hightforTable={"350px"} handleOpen={handleOpen} />
         </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Fileinput = () => {
+const Fileinput = ({ setValue }) => {
   return (
     <div>
       <div className="flex items-center justify-center w-full">
@@ -32,7 +32,17 @@ const Fileinput = () => {
               SVG, PNG, JPG or GIF (MAX. 800x400px)
             </p>
           </div>
-          <input id="dropzone-file" type="file" className="hidden" />
+          <input
+            id="dropzone-file"
+            type="file"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setValue("image", [file]);
+              }
+            }}
+          />
         </label>
       </div>
     </div>
