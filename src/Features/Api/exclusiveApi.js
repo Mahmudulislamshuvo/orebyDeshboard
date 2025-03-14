@@ -4,9 +4,8 @@ export const exclusiveApi = createApi({
   reducerPath: "exclusiveApi",
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
-    tagTypes: ["banner"],
   }),
-
+  tagTypes: ["banner"],
   endpoints: (builder) => ({
     uploadBanner: builder.mutation({
       query: (data) => ({

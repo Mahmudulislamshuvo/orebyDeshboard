@@ -15,7 +15,6 @@ import {
 } from "../../Features/Api/exclusiveApi";
 import { useForm } from "react-hook-form";
 import { SuccessToast } from "../../utils/Toastify";
-import SkeletonLoader from "../Skelitons/TableSkelitons";
 
 const Banner = () => {
   // todo: modal thing start
@@ -43,7 +42,7 @@ const Banner = () => {
       formData.append("image", data?.image[0]);
       formData.append("name", data?.name);
       const response = await uploadBanner(formData);
-      if (response?.data?.success) {
+      if (response?.data) {
         SuccessToast("Banner uploaded succesfully");
       }
     } catch (error) {

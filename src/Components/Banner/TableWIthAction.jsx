@@ -53,8 +53,8 @@ const TableWithActions = ({
                   </td>
                 </tr>
               ) : (
-                banners.map(({ name, image, createdAt, _id }, index) => {
-                  const isLast = index === banners.length - 1;
+                banners?.map(({ name, image, createdAt, _id }, index) => {
+                  const isLast = index === banners?.length - 1;
                   const classes = isLast
                     ? "p-4 text-center"
                     : "p-4 border-b border-blue-gray-50 text-center";

@@ -1,24 +1,26 @@
-// SkeletonLoader.js (Component file)
 import React from "react";
-import { Skeleton } from "@material-tailwind/react"; // Import Skeleton component from Material Tailwind
+import { Skeleton } from "@material-tailwind/react";
 
-const SkeletonLoader = ({ type, count = 1, className = "" }) => {
-  const skeletonTypeClasses = {
-    text: "h-6 w-32", // For loading text
-    image: "h-32 w-64", // For loading image (example 100px by 200px)
-    button: "h-8 w-32", // For loading button
-    tableRow: "h-8 w-full", // For table rows
-  };
-
-  const skeletonElements = Array.from({ length: count }).map((_, index) => (
-    <div key={index} className={`flex items-center gap-4 ${className}`}>
-      <Skeleton
-        className={skeletonTypeClasses[type] || skeletonTypeClasses.text}
-      />
+const TableSkelitons = () => {
+  return (
+    <div>
+      <tr>
+        <td className="p-4 text-center">
+          <Skeleton className="h-6 w-1/2 mx-auto" />
+        </td>
+        <td className="p-4 text-center">
+          <Skeleton className="h-24 w-48 mx-auto" />
+        </td>
+        <td className="p-4 text-center">
+          <Skeleton className="h-6 w-1/4 mx-auto" />
+        </td>
+        <td className="p-4 text-center flex justify-center gap-x-5">
+          <Skeleton className="h-10 w-20" />
+          <Skeleton className="h-10 w-20" />
+        </td>
+      </tr>
     </div>
-  ));
-
-  return <>{skeletonElements}</>;
+  );
 };
 
-export default SkeletonLoader;
+export default TableSkelitons;

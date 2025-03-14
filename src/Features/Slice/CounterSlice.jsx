@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { exclusiveApi } from "../Api/exclusiveApi.js";
 
 const initialState = {
   value: 0,
