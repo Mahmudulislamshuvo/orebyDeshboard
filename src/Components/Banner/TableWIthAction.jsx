@@ -91,7 +91,10 @@ const TableWithActions = ({
                       {/* Last column with action */}
                       <td className="p-4 text-center flex gap-x-5 justify-center">
                         <Button color="red">Delete</Button>
-                        <Button onClick={handleOpen} color="green">
+                        <Button
+                          onClick={() => handleOpen({ name, image, _id })}
+                          color="green"
+                        >
                           Edit
                         </Button>
                       </td>

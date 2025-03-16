@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Fileinput from "./Fileinput";
 import { Button, Input } from "@material-tailwind/react";
 import TableWithActions from "./TableWIthAction";
@@ -17,9 +17,14 @@ import { useForm } from "react-hook-form";
 import { SuccessToast } from "../../utils/Toastify";
 
 const Banner = () => {
+  const [tempBannerData, settempBannerData] = useState({});
+
   // todo: modal thing start
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(!open);
+  const handleOpen = (item) => {
+    settempBannerData(item);
+    setOpen(true);
+  };
   // todo: modal thing end
   const [uploadBanner, { isLoading, isError }] = useUploadBannerMutation();
   const {
@@ -37,6 +42,8 @@ const Banner = () => {
   } = useForm();
 
   const handlebanner = async (data) => {
+    console.log(data);
+    return;
     try {
       const formData = new FormData();
       formData.append("image", data?.image[0]);
@@ -50,10 +57,15 @@ const Banner = () => {
     }
   };
 
+  const handleDialogSubmit = (e) => {
+    e.preventDefault();
+    handlebanner();
+  };
+
   return (
     <>
       <div className="pt-5">
-        <form onSubmit={handleSubmit(handlebanner)} id="mainForm">
+        <form onSubmit={handleDialogSubmit} id="mainForm">
           <Input
             label="Banner title"
             {...register("name", { required: true, maxLength: 25 })}
@@ -85,25 +97,54 @@ const Banner = () => {
           />
         </div>
         <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
-          <DialogHeader className="relative m-0 block">
+          <DialogHeader className="relative block">
             <Typography variant="h4" color="blue-gray">
-              Manage Item
-            </Typography>
-            <Typography className="mt-1 font-normal text-gray-600">
-              Keep your records up-to-date and organized.
+              Manage Banner
             </Typography>
           </DialogHeader>
-          <DialogBody className="space-y-4 pb-6">
-            <Fileinput />
+          <DialogBody className="space-y-4 pb-2">
+            <form onSubmit={handleSubmit(handlebanner)} id="bannerForm">
+              <Input
+                label="Banner title"
+                {...register("EditName", { required: true, maxLength: 25 })}
+                defaultValue={tempBannerData.name}
+              />
+              {errors.name && (
+                <p className="text-red-400 pt-2">Banner name is required.</p>
+              )}
+              <div className="pt-5">
+                <div className="w-full relative">
+                  {/* Image with relative position */}
+                  <img
+                    src={tempBannerData.image}
+                    alt={tempBannerData.image}
+                    className="w-full h-auto object-cover"
+                  />
+
+                  {/* Fileinput positioned absolutely on top of the image */}
+                  <div className="absolute top-0 left-0 w-full h-full">
+                    <Fileinput
+                      setValue={setValue}
+                      tempBannerData={tempBannerData}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-5">
+                <DialogFooter>
+                  <div className="flex gap-x-5">
+                    <Button variant="filled" onClick={handleOpen} color="red">
+                      Cancel
+                    </Button>
+                    <Button onClick={handleDialogSubmit} type="submit">
+                      Update
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </div>
+            </form>
           </DialogBody>
-          <DialogFooter>
-            <div className="flex gap-x-5">
-              <Button variant="filled" onClick={handleOpen} color="red">
-                Cancel
-              </Button>
-              <Button onClick={handleOpen}>Update</Button>
-            </div>
-          </DialogFooter>
         </Dialog>
       </div>
     </>
