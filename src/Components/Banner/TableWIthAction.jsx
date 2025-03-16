@@ -10,7 +10,7 @@ const TableWithActions = ({
   data,
   loading,
 }) => {
-  const banners = Array.isArray(data) ? data : [];
+  const banners = Array.isArray(data) ? [...data].reverse() : [];
 
   return (
     <div
