@@ -19,7 +19,19 @@ export const exclusiveApi = createApi({
       query: () => "banner",
       providesTags: ["banner"],
     }),
+    UpdateBanner: builder.query({
+      query: ({ data, id }) => ({
+        url: `banner/:${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      providesTags: ["banner"],
+    }),
   }),
 });
 
-export const { useUploadBannerMutation, useGetAllBannerQuery } = exclusiveApi;
+export const {
+  useUploadBannerMutation,
+  useGetAllBannerQuery,
+  useUpdateBannerMutation,
+} = exclusiveApi;

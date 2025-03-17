@@ -17,13 +17,12 @@ import { useForm } from "react-hook-form";
 import { SuccessToast } from "../../utils/Toastify";
 
 const Banner = () => {
-  const [tempBannerData, settempBannerData] = useState({});
-
   // todo: modal thing start
   const [open, setOpen] = React.useState(false);
+  const [tempBannerData, settempBannerData] = useState({});
   const handleOpen = (item) => {
     settempBannerData(item);
-    setOpen(true);
+    setOpen(!open);
   };
   // todo: modal thing end
   const [uploadBanner, { isLoading, isError }] = useUploadBannerMutation();
@@ -31,50 +30,81 @@ const Banner = () => {
     data: bannerData,
     isLoading: isGettingBannersLoading,
     isError: getBannersError,
+    refetch,
   } = useGetAllBannerQuery();
 
-  // React form hook
+  // React form hook for mainForm
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
+    register: registerMain,
+    handleSubmit: handleSubmitMain,
+    formState: { errors: errorsMain },
+    setValue: setValueMain,
   } = useForm();
 
+  // React form hook for bannerForm (Dialog Form)
+  const {
+    register: registerBanner,
+    handleSubmit: handleSubmitBanner,
+    formState: { errors: errorsBanner },
+    setValue: setValueBanner,
+  } = useForm();
+
+  // handle main form
   const handlebanner = async (data) => {
-    console.log(data);
-    return;
     try {
       const formData = new FormData();
       formData.append("image", data?.image[0]);
       formData.append("name", data?.name);
       const response = await uploadBanner(formData);
       if (response?.data) {
-        SuccessToast("Banner uploaded succesfully");
+        SuccessToast("Banner uploaded successfully");
       }
     } catch (error) {
       console.log("error from banner.jsx upload banner", error);
     }
   };
+  // handle Dialoge form
+  const handleUpdatedbanner = async (data) => {
+    console.log("Updated banner data:", data); // Check the data passed from the form
+    try {
+      const formData = new FormData();
+      formData.append("image", data?.image[0]);
+      formData.append("name", data?.name);
+      const response = await uploadBanner(formData);
 
-  const handleDialogSubmit = (e) => {
-    e.preventDefault();
-    handlebanner();
+      // Log the response to verify the backend call
+      console.log("Upload response:", response);
+
+      if (response?.data) {
+        SuccessToast("Banner uploaded successfully");
+        // Close the dialog after successful update
+        setOpen(false); // Close dialog on success
+        refetch(); // Refetch the banner data to update the list
+      } else {
+        console.log("No data in response");
+      }
+    } catch (error) {
+      console.log("Error from banner.jsx upload banner:", error);
+    }
   };
 
   return (
     <>
       <div className="pt-5">
-        <form onSubmit={handleDialogSubmit} id="mainForm">
+        <form onSubmit={handleSubmitMain(handlebanner)} id="mainForm">
           <Input
             label="Banner title"
-            {...register("name", { required: true, maxLength: 25 })}
+            {...registerMain("name", { required: true, maxLength: 25 })}
           />
-          {errors.name && (
+          {errorsMain.name && (
             <p className="text-red-400 pt-2">Banner name is required.</p>
           )}
           <div className="pt-5">
-            <Fileinput setValue={setValue} />
+            <Fileinput
+              setValue={setValueMain}
+              Uoloadingimg={errorsMain.image}
+              register={registerMain}
+            />
           </div>
           <div className="pt-5">
             <Button
@@ -103,13 +133,19 @@ const Banner = () => {
             </Typography>
           </DialogHeader>
           <DialogBody className="space-y-4 pb-2">
-            <form onSubmit={handleSubmit(handlebanner)} id="bannerForm">
+            <form
+              onSubmit={handleSubmitBanner(handleUpdatedbanner)}
+              id="bannerForm"
+            >
               <Input
                 label="Banner title"
-                {...register("EditName", { required: true, maxLength: 25 })}
                 defaultValue={tempBannerData.name}
+                {...registerBanner("name", {
+                  required: true,
+                  maxLength: 25,
+                })}
               />
-              {errors.name && (
+              {errorsBanner.name && (
                 <p className="text-red-400 pt-2">Banner name is required.</p>
               )}
               <div className="pt-5">
@@ -124,8 +160,9 @@ const Banner = () => {
                   {/* Fileinput positioned absolutely on top of the image */}
                   <div className="absolute top-0 left-0 w-full h-full">
                     <Fileinput
-                      setValue={setValue}
+                      setValue={setValueBanner}
                       tempBannerData={tempBannerData}
+                      register={registerBanner}
                     />
                   </div>
                 </div>
@@ -137,7 +174,7 @@ const Banner = () => {
                     <Button variant="filled" onClick={handleOpen} color="red">
                       Cancel
                     </Button>
-                    <Button onClick={handleDialogSubmit} type="submit">
+                    <Button onClick={handleOpen} type="submit">
                       Update
                     </Button>
                   </div>

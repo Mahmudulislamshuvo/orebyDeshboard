@@ -1,6 +1,11 @@
 import React from "react";
 
-const Fileinput = ({ setValue, tempBannerData = false }) => {
+const Fileinput = ({
+  setValue,
+  tempBannerData = false,
+  Uoloadingimg = false,
+  register = false,
+}) => {
   return (
     <div>
       <div className="flex items-center justify-center w-full">
@@ -46,7 +51,11 @@ const Fileinput = ({ setValue, tempBannerData = false }) => {
                 setValue("image", [file]);
               }
             }}
+            {...(register ? register("image", { required: true }) : {})}
           />
+          {Uoloadingimg && (
+            <p className="text-red-400 pt-2">Image is required.</p>
+          )}
         </label>
       </div>
     </div>
