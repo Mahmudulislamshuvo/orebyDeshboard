@@ -54,7 +54,7 @@ const Fileinput = ({
             {...(register ? register("image", { required: true }) : {})}
           />
           {Uoloadingimg && (
-            <p className="text-red-400 pt-2">Image is required.</p>
+            <p className="text-red-400 pt-2">Banner name is required.</p>
           )}
         </label>
       </div>

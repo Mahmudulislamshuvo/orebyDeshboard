@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Fileinput from "./Fileinput";
 import { Button, Input } from "@material-tailwind/react";
 import TableWithActions from "./TableWIthAction";
@@ -20,6 +20,11 @@ const Banner = () => {
   // todo: modal thing start
   const [open, setOpen] = React.useState(false);
   const [tempBannerData, settempBannerData] = useState({});
+  const [updateData, setupdateData] = useState({
+    name: "",
+    image: "",
+  });
+
   const handleOpen = (item) => {
     settempBannerData(item);
     setOpen(!open);
@@ -30,7 +35,6 @@ const Banner = () => {
     data: bannerData,
     isLoading: isGettingBannersLoading,
     isError: getBannersError,
-    refetch,
   } = useGetAllBannerQuery();
 
   // React form hook for mainForm
@@ -65,28 +69,13 @@ const Banner = () => {
   };
   // handle Dialoge form
   const handleUpdatedbanner = async (data) => {
-    console.log("Updated banner data:", data); // Check the data passed from the form
     try {
-      const formData = new FormData();
-      formData.append("image", data?.image[0]);
-      formData.append("name", data?.name);
-      const response = await uploadBanner(formData);
-
-      // Log the response to verify the backend call
-      console.log("Upload response:", response);
-
-      if (response?.data) {
-        SuccessToast("Banner uploaded successfully");
-        // Close the dialog after successful update
-        setOpen(false); // Close dialog on success
-        refetch(); // Refetch the banner data to update the list
-      } else {
-        console.log("No data in response");
-      }
     } catch (error) {
       console.log("Error from banner.jsx upload banner:", error);
     }
   };
+
+  console.log(updateData);
 
   return (
     <>
@@ -133,50 +122,83 @@ const Banner = () => {
             </Typography>
           </DialogHeader>
           <DialogBody className="space-y-4 pb-2">
-            <form
-              onSubmit={handleSubmitBanner(handleUpdatedbanner)}
-              id="bannerForm"
-            >
+            <form onSubmit={(e) => e.preventDefault()} id="bannerForm">
               <Input
                 label="Banner title"
                 defaultValue={tempBannerData.name}
-                {...registerBanner("name", {
-                  required: true,
-                  maxLength: 25,
-                })}
+                onChange={(e) =>
+                  setupdateData({ ...updateData, name: e.target.value })
+                }
               />
-              {errorsBanner.name && (
-                <p className="text-red-400 pt-2">Banner name is required.</p>
-              )}
               <div className="pt-5">
+                {/* Image upload design */}
                 <div className="w-full relative">
-                  {/* Image with relative position */}
                   <img
                     src={tempBannerData.image}
                     alt={tempBannerData.image}
                     className="w-full h-auto object-cover"
                   />
 
-                  {/* Fileinput positioned absolutely on top of the image */}
                   <div className="absolute top-0 left-0 w-full h-full">
-                    <Fileinput
-                      setValue={setValueBanner}
-                      tempBannerData={tempBannerData}
-                      register={registerBanner}
-                    />
+                    <div className="flex items-center justify-center w-full">
+                      <label
+                        htmlFor="dialog-dropzone-file"
+                        className={
+                          tempBannerData
+                            ? "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer  hover:bg-transparent hover:border-transparent  opacity-0 hover:opacity-100"
+                            : "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                        }
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg
+                            className="w-8 h-8 mb-4 text-green-500 dark:text-gray-400"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 20 16"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                            />
+                          </svg>
+                          <p className="mb-2 text-lg text-gray-700 dark:text-gray-600">
+                            <span className="font-semibold">
+                              Click to upload
+                            </span>{" "}
+                            or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            SVG, PNG, JPG or GIF (MAX. 800x400px)
+                          </p>
+                        </div>
+                        <input
+                          id="dialog-dropzone-file"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) =>
+                            setupdateData({
+                              ...updateData,
+                              image: e.target.files[0],
+                            })
+                          }
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
-
+              {/* Image upload design end*/}
               <div className="pt-5">
                 <DialogFooter>
                   <div className="flex gap-x-5">
                     <Button variant="filled" onClick={handleOpen} color="red">
                       Cancel
                     </Button>
-                    <Button onClick={handleOpen} type="submit">
-                      Update
-                    </Button>
+                    <Button onClick={handleUpdatedbanner}>Update</Button>
                   </div>
                 </DialogFooter>
               </div>
