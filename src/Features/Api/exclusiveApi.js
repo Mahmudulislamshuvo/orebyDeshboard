@@ -32,6 +32,7 @@ export const exclusiveApi = createApi({
         url: `banner/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["banner"],
     }),
   }),
 });

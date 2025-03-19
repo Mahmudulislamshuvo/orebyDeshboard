@@ -16,18 +16,20 @@ import {
   useUploadBannerMutation,
 } from "../../Features/Api/exclusiveApi";
 import { useForm } from "react-hook-form";
-import { SuccessToast } from "../../utils/Toastify";
+import { InfoToast, SuccessToast } from "../../utils/Toastify";
 import { isCheckValue } from "../../librarry/valueChecker";
 
 const Banner = () => {
   // todo: modal thing start
   const [open, setOpen] = React.useState(false);
+  const [openTwo, setOpenTwo] = React.useState(false);
   const [tempBannerData, settempBannerData] = useState({});
   const [updateData, setupdateData] = useState({
     _id: "",
     name: "",
     image: "",
   });
+  const [deleteBannerTempData, setdeleteBannerTempData] = useState({});
 
   // React form hook for mainForm
   const {
@@ -38,12 +40,12 @@ const Banner = () => {
   } = useForm();
 
   // React form hook for bannerForm (Dialog Form)
-  const {
-    register: registerBanner,
-    handleSubmit: handleSubmitBanner,
-    formState: { errors: errorsBanner },
-    setValue: setValueBanner,
-  } = useForm();
+  // const {
+  //   register: registerBanner,
+  //   handleSubmit: handleSubmitBanner,
+  //   formState: { errors: errorsBanner },
+  //   setValue: setValueBanner,
+  // } = useForm();
 
   // handle modal open
   const handleOpen = (item) => {
@@ -127,10 +129,21 @@ const Banner = () => {
   // handle Delete banner
   const handleDeleteBanner = async (id) => {
     try {
-      console.log(id);
+      const DeletingId = deleteBannerTempData?._id;
+      const response = await DeleteBanner(DeletingId);
+      if (response?.data) {
+        InfoToast("Banner deleted successfully");
+      }
     } catch (error) {
       console.log("Error from banner.jsx handleDeleteBanner:", error);
+    } finally {
+      setOpenTwo(false);
     }
+  };
+
+  const handleOpentwo = (id) => {
+    setdeleteBannerTempData(id);
+    setOpenTwo((prev) => !prev);
   };
 
   return (
@@ -169,7 +182,7 @@ const Banner = () => {
             handleOpen={handleOpen}
             data={bannerData?.data}
             loading={isGettingBannersLoading}
-            handleDete={handleDeleteBanner}
+            handleDete={handleOpentwo}
           />
         </div>
         <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
@@ -257,12 +270,44 @@ const Banner = () => {
                     <Button variant="filled" onClick={handleOpen} color="red">
                       Cancel
                     </Button>
-                    <Button onClick={handleUpdatedbanner}>Update</Button>
+                    <Button
+                      onClick={handleUpdatedbanner}
+                      loading={isUpdatingBanner}
+                    >
+                      Update
+                    </Button>
                   </div>
                 </DialogFooter>
               </div>
             </form>
           </DialogBody>
+        </Dialog>
+        {/* dialog for Delete confirmation popup */}
+        <Dialog
+          size="sm"
+          open={openTwo}
+          handler={handleOpentwo}
+          className="p-4"
+        >
+          <DialogBody className="space-y-4 pb-2">
+            <div className="text-xl text-black-500">
+              You are confirm to delete that banner
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <div className="flex gap-x-5">
+              <Button variant="filled" onClick={handleOpentwo} color="green">
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteBanner}
+                color="red"
+                loading={isDeletingBanner}
+              >
+                Confirm
+              </Button>
+            </div>
+          </DialogFooter>
         </Dialog>
       </div>
     </>
