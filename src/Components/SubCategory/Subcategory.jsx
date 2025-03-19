@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import React from "react";
-import TableWithActions from "../Banner/TableWIthAction";
+import TableWithActions from "../CommonComponents/TableWIthAction";
 import { Select, Option } from "@material-tailwind/react";
 
 const Subcategory = () => {

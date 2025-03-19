@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
-import Fileinput from "../Banner/Fileinput";
+import Fileinput from "../CommonComponents/Fileinput";
 import {
   Button,
   Dialog,

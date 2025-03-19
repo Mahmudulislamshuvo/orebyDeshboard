@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Fileinput from "./Fileinput";
+import Fileinput from "../CommonComponents/Fileinput";
 import { Button, Input } from "@material-tailwind/react";
-import TableWithActions from "./TableWIthAction";
+import TableWithActions from "../CommonComponents/TableWIthAction";
 import {
   Dialog,
   DialogBody,

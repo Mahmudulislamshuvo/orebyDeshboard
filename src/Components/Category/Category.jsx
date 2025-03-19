@@ -1,7 +1,7 @@
 import { Button, Input, Textarea } from "@material-tailwind/react";
 import React from "react";
-import Fileinput from "../Banner/Fileinput";
-import TableWithActions from "../Banner/TableWIthAction";
+import Fileinput from "../CommonComponents/Fileinput";
+import TableWithActions from "../CommonComponents/TableWIthAction";
 import {
   Dialog,
   DialogBody,
@@ -17,7 +17,14 @@ const Category = () => {
     <div>
       <div className="flex flex-col gap-y-5">
         <Input label="Category Name" />
-        <Textarea color="green" label="Description" />
+        <div className="flex gap-x-5 w-full">
+          <div className="w-[49%] flex">
+            <Textarea color="green" label="Description" />
+          </div>
+          <div className="w-[49%]">
+            <Fileinput className="bg-red-300" />
+          </div>
+        </div>
         <Button
           variant="filled"
           loading={false}
