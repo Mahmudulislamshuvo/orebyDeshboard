@@ -19,18 +19,25 @@ export const exclusiveApi = createApi({
       query: () => "banner",
       providesTags: ["banner"],
     }),
-    UpdateBanner: builder.query({
+    UpdateBanner: builder.mutation({
       query: ({ data, id }) => ({
-        url: `banner/:${id}`,
+        url: `banner/${id}`,
         method: "PUT",
         body: data,
       }),
-      providesTags: ["banner"],
+      invalidatesTags: ["banner"],
+    }),
+    DeleteBanner: builder.mutation({
+      query: (id) => ({
+        url: `banner/${id}`,
+        method: "DELETE",
+      }),
     }),
   }),
 });
 
 export const {
+  useDeleteBannerMutation,
   useUploadBannerMutation,
   useGetAllBannerQuery,
   useUpdateBannerMutation,

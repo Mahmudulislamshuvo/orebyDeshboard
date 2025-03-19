@@ -9,6 +9,13 @@ import {
   DialogHeader,
   Typography,
 } from "@material-tailwind/react";
+// import { useForm } from "react-hook-form";
+// const {
+//   register: registerMain,
+//   handleSubmit: handleSubmitMain,
+//   formState: { errors: errorsMain },
+//   setValue: setValueMain,
+// } = useForm();
 
 const Category = () => {
   const [open, setOpen] = React.useState(false);
@@ -16,25 +23,27 @@ const Category = () => {
   return (
     <div>
       <div className="flex flex-col gap-y-5">
-        <Input label="Category Name" />
-        <div className="flex gap-x-5 w-full">
-          <div className="w-[49%] flex">
-            <Textarea color="green" label="Description" />
+        <form>
+          <Input label="Category Name" />
+          <div className="flex gap-x-5 w-full">
+            <div className="w-[49%] flex">
+              <Textarea color="green" label="Description" />
+            </div>
+            <div className="w-[49%]">
+              <Fileinput className="bg-red-300" />
+            </div>
           </div>
-          <div className="w-[49%]">
-            <Fileinput className="bg-red-300" />
-          </div>
-        </div>
-        <Button
-          variant="filled"
-          loading={false}
-          className="w-[15%] text-sm"
-          type="submit"
-          form="mainForm"
-          color="green"
-        >
-          Upload
-        </Button>
+          <Button
+            variant="filled"
+            loading={false}
+            className="w-[15%] text-sm"
+            type="submit"
+            form="mainForm"
+            color="green"
+          >
+            Upload
+          </Button>
+        </form>
       </div>
       <TableWithActions hightforTable={"470px"} handleOpen={handleOpen} />
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">

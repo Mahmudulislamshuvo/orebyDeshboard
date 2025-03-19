@@ -10,32 +10,24 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import {
+  useDeleteBannerMutation,
   useGetAllBannerQuery,
+  useUpdateBannerMutation,
   useUploadBannerMutation,
 } from "../../Features/Api/exclusiveApi";
 import { useForm } from "react-hook-form";
 import { SuccessToast } from "../../utils/Toastify";
+import { isCheckValue } from "../../librarry/valueChecker";
 
 const Banner = () => {
   // todo: modal thing start
   const [open, setOpen] = React.useState(false);
   const [tempBannerData, settempBannerData] = useState({});
   const [updateData, setupdateData] = useState({
+    _id: "",
     name: "",
     image: "",
   });
-
-  const handleOpen = (item) => {
-    settempBannerData(item);
-    setOpen(!open);
-  };
-  // todo: modal thing end
-  const [uploadBanner, { isLoading, isError }] = useUploadBannerMutation();
-  const {
-    data: bannerData,
-    isLoading: isGettingBannersLoading,
-    isError: getBannersError,
-  } = useGetAllBannerQuery();
 
   // React form hook for mainForm
   const {
@@ -53,6 +45,30 @@ const Banner = () => {
     setValue: setValueBanner,
   } = useForm();
 
+  // handle modal open
+  const handleOpen = (item) => {
+    if (item) {
+      settempBannerData(item);
+      // this how set Id to setupdateData
+      setupdateData({
+        ...updateData,
+        _id: item._id,
+      });
+    }
+    setOpen((prev) => !prev);
+  };
+  // todo: modal thing end
+  const [uploadBanner, { isLoading, isError }] = useUploadBannerMutation();
+  const {
+    data: bannerData,
+    isLoading: isGettingBannersLoading,
+    isError: getBannersError,
+  } = useGetAllBannerQuery();
+  const [UpdateBanner, { isLoading: isUpdatingBanner }] =
+    useUpdateBannerMutation();
+  const [DeleteBanner, { isLoading: isDeletingBanner }] =
+    useDeleteBannerMutation();
+
   // handle main form
   const handlebanner = async (data) => {
     try {
@@ -67,15 +83,48 @@ const Banner = () => {
       console.log("error from banner.jsx upload banner", error);
     }
   };
-  // handle Dialoge form
+
+  // handle Dialoge form for udate/edit the banner
   const handleUpdatedbanner = async (data) => {
     try {
+      const CheckedUpdateData = isCheckValue(updateData);
+      if (CheckedUpdateData == false) {
+        console.log("please fill the form properly");
+        return;
+      }
+      const lestestUpdatedData = {};
+      for (let key in CheckedUpdateData) {
+        if (key == "_id") {
+          continue;
+        } else {
+          lestestUpdatedData[key] = CheckedUpdateData[key];
+        }
+      }
+
+      const response = await UpdateBanner({
+        data: lestestUpdatedData,
+        id: CheckedUpdateData._id,
+      });
+
+      if (response?.data) {
+        SuccessToast("Banner updated successfully");
+      }
+
+      console.log(response);
     } catch (error) {
       console.log("Error from banner.jsx upload banner:", error);
+    } finally {
+      setOpen(false);
     }
   };
 
-  console.log(updateData);
+  // handle Delete banner
+  const handleDeleteBanner = async () => {
+    try {
+    } catch (error) {
+      console.log("Error from banner.jsx handleDeleteBanner:", error);
+    }
+  };
 
   return (
     <>
@@ -129,6 +178,8 @@ const Banner = () => {
                 onChange={(e) =>
                   setupdateData({ ...updateData, name: e.target.value })
                 }
+                onClick={(e) => (e.target.value = "")}
+                onBlur={(e) => (e.target.value = tempBannerData.name)}
               />
               <div className="pt-5">
                 {/* Image upload design */}
