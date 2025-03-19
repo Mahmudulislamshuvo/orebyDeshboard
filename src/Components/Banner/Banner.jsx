@@ -88,6 +88,7 @@ const Banner = () => {
   const handleUpdatedbanner = async (data) => {
     try {
       const CheckedUpdateData = isCheckValue(updateData);
+
       if (CheckedUpdateData == false) {
         console.log("please fill the form properly");
         return;
@@ -99,6 +100,11 @@ const Banner = () => {
         } else {
           lestestUpdatedData[key] = CheckedUpdateData[key];
         }
+      }
+      // if lestestUpdatedData empty then no need to update
+      if (Object.keys(lestestUpdatedData).length === 0) {
+        console.log("No changes to update");
+        return;
       }
 
       const response = await UpdateBanner({
@@ -119,8 +125,9 @@ const Banner = () => {
   };
 
   // handle Delete banner
-  const handleDeleteBanner = async () => {
+  const handleDeleteBanner = async (id) => {
     try {
+      console.log(id);
     } catch (error) {
       console.log("Error from banner.jsx handleDeleteBanner:", error);
     }
@@ -162,6 +169,7 @@ const Banner = () => {
             handleOpen={handleOpen}
             data={bannerData?.data}
             loading={isGettingBannersLoading}
+            handleDete={handleDeleteBanner}
           />
         </div>
         <Dialog size="sm" open={open} handler={handleOpen} className="p-4">

@@ -9,6 +9,7 @@ const TableWithActions = ({
   handleOpen,
   data,
   loading,
+  handleDete,
 }) => {
   const banners = Array.isArray(data) ? [...data].reverse() : [];
 
