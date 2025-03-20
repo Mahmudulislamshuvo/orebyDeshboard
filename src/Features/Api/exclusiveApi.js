@@ -5,7 +5,7 @@ export const exclusiveApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
   }),
-  tagTypes: ["banner"],
+  tagTypes: ["banner", "category"],
   endpoints: (builder) => ({
     uploadBanner: builder.mutation({
       query: (data) => ({
@@ -35,10 +35,24 @@ export const exclusiveApi = createApi({
       }),
       invalidatesTags: ["banner"],
     }),
+    GetAllCategory: builder.query({
+      query: () => "category",
+      providesTags: ["category"],
+    }),
+    GetCreateCategory: builder.mutation({
+      query: (data) => ({
+        url: `category`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["category"],
+    }),
   }),
 });
 
 export const {
+  useGetCreateCategoryMutation,
+  useGetAllCategoryQuery,
   useDeleteBannerMutation,
   useUploadBannerMutation,
   useGetAllBannerQuery,

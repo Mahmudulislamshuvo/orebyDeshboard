@@ -1,5 +1,5 @@
 import { Button, Input, Textarea } from "@material-tailwind/react";
-import React from "react";
+import React, { useState } from "react";
 import Fileinput from "../CommonComponents/Fileinput";
 import TableWithActions from "../CommonComponents/TableWIthAction";
 import {
@@ -9,34 +9,120 @@ import {
   DialogHeader,
   Typography,
 } from "@material-tailwind/react";
-// import { useForm } from "react-hook-form";
-// const {
-//   register: registerMain,
-//   handleSubmit: handleSubmitMain,
-//   formState: { errors: errorsMain },
-//   setValue: setValueMain,
-// } = useForm();
+import {
+  useGetAllCategoryQuery,
+  useGetCreateCategoryMutation,
+} from "../../Features/Api/exclusiveApi";
+import { useForm } from "react-hook-form";
+import { SuccessToast } from "../../utils/Toastify";
+
+const TABLE_HEAD = ["Title", "Banner", "Description", "Date", "Actions"];
 
 const Category = () => {
+  const {
+    register: registerMain,
+    handleSubmit: handleSubmitMain,
+    formState: { errors: errorsMain },
+    setValue: setValueMain,
+    reset,
+  } = useForm();
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(!open);
+
+  const [tempCategoryData, settempCategoryData] = useState({});
+  const [updateData, setupdateData] = useState({
+    _id: "",
+    name: "",
+    description: "",
+    image: "",
+  });
+
+  const {
+    isLoading: GetCategoryLoading,
+    data: categoryData,
+    isError,
+  } = useGetAllCategoryQuery();
+  const [GetCreateCategory, { isLoading: isCategoryCreating }] =
+    useGetCreateCategoryMutation();
+
+  // handle dialog open
+  const handleOpen = (item) => {
+    if (item) {
+      settempCategoryData(item);
+      setupdateData({
+        ...updateData,
+        _id: item._id,
+      });
+    }
+    setOpen((prev) => !prev);
+  };
+
+  // handle create category
+  const handleUploadCategory = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", data?.image[0]);
+      formData.append("description", data?.description);
+      formData.append("name", data?.name);
+      const response = await GetCreateCategory(formData);
+      if (response?.data) {
+        SuccessToast("Banner uploaded successfully");
+        reset();
+      }
+    } catch (error) {
+      console.log("error from banner.jsx upload Categry", error);
+    }
+  };
+
+  // handle Upadate category
+  const handleUpdateCategory = async (data) => {
+    console.log(data);
+
+    try {
+    } catch (error) {
+      console.log("error from banner.jsx updating category", error);
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-y-5">
-        <form>
-          <Input label="Category Name" />
-          <div className="flex gap-x-5 w-full">
-            <div className="w-[49%] flex">
-              <Textarea color="green" label="Description" />
+        <form onSubmit={handleSubmitMain(handleUploadCategory)} id="mainForm">
+          <Input
+            label="Category Name"
+            {...registerMain("name", { required: true, maxLength: 25 })}
+          />
+          {errorsMain.name && (
+            <p className="text-red-400 pt-2">Category name is required.</p>
+          )}
+          <div className="flex w-full gap-x-5 pt-5">
+            <div className="flex w-[49%]">
+              <Textarea
+                color="green"
+                label="Description"
+                {...registerMain("description", {
+                  required: true,
+                })}
+              />
             </div>
+
             <div className="w-[49%]">
-              <Fileinput className="bg-red-300" />
+              <Fileinput
+                className="bg-red-300"
+                setValue={setValueMain}
+                Uoloadingimg={errorsMain.image}
+                register={registerMain}
+              />
             </div>
           </div>
+          {errorsMain.description && (
+            <p className="text-red-400 pt-2">
+              Category description is required.
+            </p>
+          )}
           <Button
             variant="filled"
-            loading={false}
-            className="w-[15%] text-sm"
+            loading={isCategoryCreating}
+            className="text-sm w-[15%] mt-5"
             type="submit"
             form="mainForm"
             color="green"
@@ -45,26 +131,125 @@ const Category = () => {
           </Button>
         </form>
       </div>
-      <TableWithActions hightforTable={"470px"} handleOpen={handleOpen} />
+      <TableWithActions
+        hightforTable={"350px"}
+        handleOpen={handleOpen}
+        data={categoryData?.data}
+        loading={GetCategoryLoading}
+        // handleDete={handleOpentwo}
+        TABLE_HEAD={TABLE_HEAD}
+      />
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
-        <DialogHeader className="relative m-0 block">
+        <DialogHeader className="m-0 block relative">
           <Typography variant="h4" color="blue-gray">
             Manage Category
           </Typography>
-          {/* <Typography className="mt-1 font-normal text-gray-600">
+          {/* <Typography className="text-gray-600 font-normal mt-1">
             Keep your records up-to-date and organized.
           </Typography> */}
         </DialogHeader>
-        <DialogBody className="space-y-4 pb-6">
-          <Input label="Category Name" />
-          <Textarea color="green" label="Description" />
+        <DialogBody className="pb-6 space-y-4">
+          <form onSubmit={(e) => e.preventDefault()} id="secondform">
+            <Input
+              label="Category Name"
+              defaultValue={tempCategoryData.name}
+              onClick={(e) => (e.target.value = "")}
+              onBlur={(e) => (e.target.value = tempCategoryData.name)}
+              onChange={(e) =>
+                setupdateData({ ...updateData, name: e.target.value })
+              }
+            />
+            <div className="w-full gap-x-5 pt-5">
+              <div className="flex ">
+                <Textarea
+                  color="green"
+                  label="Description"
+                  defaultValue={tempCategoryData.description}
+                  className="h-[40px] p-5"
+                  onClick={(e) => (e.target.value = "")}
+                  onBlur={(e) =>
+                    (e.target.value = tempCategoryData.description)
+                  }
+                  onChange={(e) =>
+                    setupdateData({
+                      ...updateData,
+                      description: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="mt-2">
+                {/* Img design start */}
+                <div className="w-full relative">
+                  <img
+                    src={tempCategoryData.image}
+                    alt={tempCategoryData.image}
+                    className="h-auto w-full object-cover"
+                  />
+
+                  <div className="h-full w-full absolute left-0 top-0">
+                    <div className="flex justify-center w-full items-center">
+                      <label
+                        htmlFor="dialog-dropzone-file"
+                        className={
+                          tempCategoryData
+                            ? "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer  hover:bg-transparent hover:border-transparent  opacity-0 hover:opacity-100"
+                            : "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                        }
+                      >
+                        <div className="flex flex-col justify-center items-center pb-6 pt-5">
+                          <svg
+                            className="h-8 text-green-500 w-8 dark:text-gray-400 mb-4"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 20 16"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                            />
+                          </svg>
+                          <p className="text-gray-700 text-lg dark:text-gray-600 mb-2">
+                            <span className="font-semibold">
+                              Click to upload
+                            </span>{" "}
+                            or drag and drop
+                          </p>
+                          <p className="text-gray-500 text-xs dark:text-gray-400">
+                            SVG, PNG, JPG or GIF (MAX. 800x400px)
+                          </p>
+                        </div>
+                        <input
+                          id="dialog-dropzone-file"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) =>
+                            setupdateData({
+                              ...updateData,
+                              image: e.target.files[0],
+                            })
+                          }
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                {/* Img design end */}
+              </div>
+            </div>
+          </form>
         </DialogBody>
         <DialogFooter>
           <div className="flex gap-x-5">
             <Button variant="filled" onClick={handleOpen} color="red">
               Cancel
             </Button>
-            <Button onClick={handleOpen}>Update</Button>
+            <Button onClick={handleUpdateCategory}>Update</Button>
           </div>
         </DialogFooter>
       </Dialog>

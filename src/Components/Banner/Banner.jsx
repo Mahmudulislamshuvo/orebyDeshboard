@@ -19,6 +19,8 @@ import { useForm } from "react-hook-form";
 import { InfoToast, SuccessToast } from "../../utils/Toastify";
 import { isCheckValue } from "../../librarry/valueChecker";
 
+const TABLE_HEAD = ["Title", "Banner", "Date", "Actions"];
+
 const Banner = () => {
   // todo: modal thing start
   const [open, setOpen] = React.useState(false);
@@ -37,6 +39,7 @@ const Banner = () => {
     handleSubmit: handleSubmitMain,
     formState: { errors: errorsMain },
     setValue: setValueMain,
+    reset,
   } = useForm();
 
   // React form hook for bannerForm (Dialog Form)
@@ -51,7 +54,6 @@ const Banner = () => {
   const handleOpen = (item) => {
     if (item) {
       settempBannerData(item);
-      // this how set Id to setupdateData
       setupdateData({
         ...updateData,
         _id: item._id,
@@ -80,6 +82,8 @@ const Banner = () => {
       const response = await uploadBanner(formData);
       if (response?.data) {
         SuccessToast("Banner uploaded successfully");
+        setupdateData({ _id: "", name: "", image: "" });
+        reset();
       }
     } catch (error) {
       console.log("error from banner.jsx upload banner", error);
@@ -87,94 +91,66 @@ const Banner = () => {
   };
 
   // handle Dialoge form for udate/edit the banner
-  // const handleUpdatedbanner = async (data) => {
-  //   try {
-  //     const CheckedUpdateData = isCheckValue(updateData);
-
-  //     if (CheckedUpdateData == false) {
-  //       console.log("please fill the form properly");
-  //       return;
-  //     }
-  //     const lestestUpdatedData = {};
-  //     for (let key in CheckedUpdateData) {
-  //       if (key == "_id") {
-  //         continue;
-  //       } else {
-  //         lestestUpdatedData[key] = CheckedUpdateData[key];
-  //       }
-  //     }
-
-  //     // if lestestUpdatedData empty then no need to update
-  //     if (Object.keys(lestestUpdatedData).length === 0) {
-  //       console.log("No changes to update");
-  //       return;
-  //     }
-
-  //     const response = await UpdateBanner({
-  //       data: lestestUpdatedData,
-  //       id: CheckedUpdateData._id,
-  //     });
-
-  //     if (response?.data) {
-  //       SuccessToast("Banner updated successfully");
-  //     }
-  //   } catch (error) {
-  //     console.log("Error from banner.jsx upload banner:", error);
-  //   } finally {
-  //     setOpen(true);
-  //   }
-  // };
-
   const handleUpdatedbanner = async () => {
     try {
       const CheckedUpdateData = isCheckValue(updateData);
-
       if (!CheckedUpdateData) {
         console.log("Please fill the form properly");
         return;
       }
 
+      // Create an object to store the updated data, excluding the _id
+      const updatedData = {};
+      // Add all the data to the updatedData object, except _id
+      for (const key in CheckedUpdateData) {
+        if (key !== "_id") {
+          updatedData[key] = CheckedUpdateData[key];
+        }
+      }
+      // no need to chnage anthing if Nothing to update
+      if (Object.keys(updatedData).length === 0) {
+        console.log("No changes to update");
+        return;
+      }
+
+      // Create FormData only if there are changes
       const formData = new FormData();
       let hasChanges = false;
 
-      // Append all fields except _id to FormData
-      for (const key in CheckedUpdateData) {
-        if (key === "_id") continue;
-
-        const value = CheckedUpdateData[key];
+      // Append fields to FormData
+      for (const key in updatedData) {
+        const value = updatedData[key];
         if (value !== undefined && value !== null) {
-          // Handle both files and regular data
           formData.append(key, value);
           hasChanges = true;
         }
       }
 
-      // Log FormData contents for debugging
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
+      // If there are no changes, skip the API call
       if (!hasChanges) {
         console.log("No changes to update");
         return;
       }
 
-      // Add the ID as a regular form field if needed
+      // Add the ID to the FormData (this is required for the backend)
       formData.append("id", CheckedUpdateData._id);
 
+      // Make the API call to update the banner
       const response = await UpdateBanner({
         data: formData,
         id: CheckedUpdateData._id,
       });
-      console.log(response);
 
+      // If the update is successful, show success message
       if (response?.data) {
         SuccessToast("Banner updated successfully");
       }
     } catch (error) {
       console.log("Error from banner.jsx upload banner:", error);
     } finally {
+      // Close the dialog or reset the form as needed
       setOpen(false);
+      setupdateData("");
     }
   };
 
@@ -236,6 +212,7 @@ const Banner = () => {
             data={bannerData?.data}
             loading={isGettingBannersLoading}
             handleDete={handleOpentwo}
+            TABLE_HEAD={TABLE_HEAD}
           />
         </div>
         <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
