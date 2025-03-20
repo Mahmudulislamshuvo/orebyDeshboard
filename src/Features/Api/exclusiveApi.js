@@ -24,6 +24,7 @@ export const exclusiveApi = createApi({
         url: `banner/${id}`,
         method: "PUT",
         body: data,
+        formData: true,
       }),
       invalidatesTags: ["banner"],
     }),

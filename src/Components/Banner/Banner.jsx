@@ -87,38 +87,90 @@ const Banner = () => {
   };
 
   // handle Dialoge form for udate/edit the banner
-  const handleUpdatedbanner = async (data) => {
+  // const handleUpdatedbanner = async (data) => {
+  //   try {
+  //     const CheckedUpdateData = isCheckValue(updateData);
+
+  //     if (CheckedUpdateData == false) {
+  //       console.log("please fill the form properly");
+  //       return;
+  //     }
+  //     const lestestUpdatedData = {};
+  //     for (let key in CheckedUpdateData) {
+  //       if (key == "_id") {
+  //         continue;
+  //       } else {
+  //         lestestUpdatedData[key] = CheckedUpdateData[key];
+  //       }
+  //     }
+
+  //     // if lestestUpdatedData empty then no need to update
+  //     if (Object.keys(lestestUpdatedData).length === 0) {
+  //       console.log("No changes to update");
+  //       return;
+  //     }
+
+  //     const response = await UpdateBanner({
+  //       data: lestestUpdatedData,
+  //       id: CheckedUpdateData._id,
+  //     });
+
+  //     if (response?.data) {
+  //       SuccessToast("Banner updated successfully");
+  //     }
+  //   } catch (error) {
+  //     console.log("Error from banner.jsx upload banner:", error);
+  //   } finally {
+  //     setOpen(true);
+  //   }
+  // };
+
+  const handleUpdatedbanner = async () => {
     try {
       const CheckedUpdateData = isCheckValue(updateData);
 
-      if (CheckedUpdateData == false) {
-        console.log("please fill the form properly");
+      if (!CheckedUpdateData) {
+        console.log("Please fill the form properly");
         return;
       }
-      const lestestUpdatedData = {};
-      for (let key in CheckedUpdateData) {
-        if (key == "_id") {
-          continue;
-        } else {
-          lestestUpdatedData[key] = CheckedUpdateData[key];
+
+      const formData = new FormData();
+      let hasChanges = false;
+
+      // Append all fields except _id to FormData
+      for (const key in CheckedUpdateData) {
+        if (key === "_id") continue;
+
+        const value = CheckedUpdateData[key];
+        if (value !== undefined && value !== null) {
+          // Handle both files and regular data
+          formData.append(key, value);
+          hasChanges = true;
         }
       }
-      // if lestestUpdatedData empty then no need to update
-      if (Object.keys(lestestUpdatedData).length === 0) {
+
+      // Log FormData contents for debugging
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      if (!hasChanges) {
         console.log("No changes to update");
         return;
       }
 
+      // Add the ID as a regular form field if needed
+      formData.append("id", CheckedUpdateData._id);
+
       const response = await UpdateBanner({
-        data: lestestUpdatedData,
+        data: formData,
         id: CheckedUpdateData._id,
       });
+      console.log(response);
 
       if (response?.data) {
         SuccessToast("Banner updated successfully");
       }
-
-      console.log(response);
     } catch (error) {
       console.log("Error from banner.jsx upload banner:", error);
     } finally {
@@ -130,6 +182,7 @@ const Banner = () => {
   const handleDeleteBanner = async (id) => {
     try {
       const DeletingId = deleteBannerTempData?._id;
+
       const response = await DeleteBanner(DeletingId);
       if (response?.data) {
         InfoToast("Banner deleted successfully");
@@ -168,7 +221,7 @@ const Banner = () => {
             <Button
               variant="filled"
               loading={isLoading}
-              className="w-[15%] text-sm"
+              className="text-sm w-[15%]"
               type="submit"
               color="green"
             >
@@ -186,12 +239,12 @@ const Banner = () => {
           />
         </div>
         <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
-          <DialogHeader className="relative block">
+          <DialogHeader className="block relative">
             <Typography variant="h4" color="blue-gray">
               Manage Banner
             </Typography>
           </DialogHeader>
-          <DialogBody className="space-y-4 pb-2">
+          <DialogBody className="pb-2 space-y-4">
             <form onSubmit={(e) => e.preventDefault()} id="bannerForm">
               <Input
                 label="Banner title"
@@ -208,11 +261,11 @@ const Banner = () => {
                   <img
                     src={tempBannerData.image}
                     alt={tempBannerData.image}
-                    className="w-full h-auto object-cover"
+                    className="h-auto w-full object-cover"
                   />
 
-                  <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="flex items-center justify-center w-full">
+                  <div className="h-full w-full absolute left-0 top-0">
+                    <div className="flex justify-center w-full items-center">
                       <label
                         htmlFor="dialog-dropzone-file"
                         className={
@@ -221,9 +274,9 @@ const Banner = () => {
                             : "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
                         }
                       >
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <div className="flex flex-col justify-center items-center pb-6 pt-5">
                           <svg
-                            className="w-8 h-8 mb-4 text-green-500 dark:text-gray-400"
+                            className="h-8 text-green-500 w-8 dark:text-gray-400 mb-4"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -237,13 +290,13 @@ const Banner = () => {
                               d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                             />
                           </svg>
-                          <p className="mb-2 text-lg text-gray-700 dark:text-gray-600">
+                          <p className="text-gray-700 text-lg dark:text-gray-600 mb-2">
                             <span className="font-semibold">
                               Click to upload
                             </span>{" "}
                             or drag and drop
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-gray-500 text-xs dark:text-gray-400">
                             SVG, PNG, JPG or GIF (MAX. 800x400px)
                           </p>
                         </div>
@@ -289,8 +342,8 @@ const Banner = () => {
           handler={handleOpentwo}
           className="p-4"
         >
-          <DialogBody className="space-y-4 pb-2">
-            <div className="text-xl text-black-500">
+          <DialogBody className="pb-2 space-y-4">
+            <div className="text-black-500 text-xl">
               You are confirm to delete that banner
             </div>
           </DialogBody>
