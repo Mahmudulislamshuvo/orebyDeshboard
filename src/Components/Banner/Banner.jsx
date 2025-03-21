@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Fileinput from "../CommonComponents/Fileinput";
 import { Button, Input } from "@material-tailwind/react";
 import TableWithActions from "../CommonComponents/TableWIthAction";
@@ -42,14 +42,6 @@ const Banner = () => {
     reset,
   } = useForm();
 
-  // React form hook for bannerForm (Dialog Form)
-  // const {
-  //   register: registerBanner,
-  //   handleSubmit: handleSubmitBanner,
-  //   formState: { errors: errorsBanner },
-  //   setValue: setValueBanner,
-  // } = useForm();
-
   // handle modal open
   const handleOpen = (item) => {
     if (item) {
@@ -82,11 +74,12 @@ const Banner = () => {
       const response = await uploadBanner(formData);
       if (response?.data) {
         SuccessToast("Banner uploaded successfully");
-        setupdateData({ _id: "", name: "", image: "" });
-        reset();
       }
     } catch (error) {
       console.log("error from banner.jsx upload banner", error);
+    } finally {
+      setupdateData({ _id: "", name: "", image: "" });
+      reset();
     }
   };
 
@@ -98,7 +91,6 @@ const Banner = () => {
         console.log("Please fill the form properly");
         return;
       }
-
       // Create an object to store the updated data, excluding the _id
       const updatedData = {};
       // Add all the data to the updatedData object, except _id
@@ -229,8 +221,6 @@ const Banner = () => {
                 onChange={(e) =>
                   setupdateData({ ...updateData, name: e.target.value })
                 }
-                onClick={(e) => (e.target.value = "")}
-                onBlur={(e) => (e.target.value = tempBannerData.name)}
               />
               <div className="pt-5">
                 {/* Image upload design */}

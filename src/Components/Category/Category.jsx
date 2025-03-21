@@ -12,9 +12,11 @@ import {
 import {
   useGetAllCategoryQuery,
   useGetCreateCategoryMutation,
-} from "../../Features/Api/exclusiveApi";
+  useGetUpdateCategoryMutation,
+} from "../../Features/Api/exclusiveApi.js";
 import { useForm } from "react-hook-form";
 import { SuccessToast } from "../../utils/Toastify";
+import { isCheckValue } from "../../librarry/valueChecker.js";
 
 const TABLE_HEAD = ["Title", "Banner", "Description", "Date", "Actions"];
 
@@ -43,7 +45,8 @@ const Category = () => {
   } = useGetAllCategoryQuery();
   const [GetCreateCategory, { isLoading: isCategoryCreating }] =
     useGetCreateCategoryMutation();
-
+  const [GetUpdateCategory, { isLoading: isUpading }] =
+    useGetUpdateCategoryMutation();
   // handle dialog open
   const handleOpen = (item) => {
     if (item) {
@@ -53,7 +56,9 @@ const Category = () => {
         _id: item._id,
       });
     }
-    setOpen((prev) => !prev);
+
+    // setOpen((prev) => !prev);
+    setOpen(true);
   };
 
   // handle create category
@@ -66,20 +71,67 @@ const Category = () => {
       const response = await GetCreateCategory(formData);
       if (response?.data) {
         SuccessToast("Banner uploaded successfully");
-        reset();
       }
     } catch (error) {
       console.log("error from banner.jsx upload Categry", error);
+    } finally {
+      setupdateData({ _id: "", name: "", image: "", description: "" });
+      reset();
     }
   };
 
   // handle Upadate category
-  const handleUpdateCategory = async (data) => {
-    console.log(data);
-
+  const handleUpdatedbanner = async () => {
     try {
+      const CheckedUpdateData = isCheckValue(updateData);
+      if (!CheckedUpdateData) {
+        console.log("Please fill the form properly");
+        return;
+      }
+      // Create an object to store the updated data, excluding the _id
+      const updatedData = {};
+      // Add all the data to the updatedData object, except _id
+      for (const key in CheckedUpdateData) {
+        if (key !== "_id") {
+          updatedData[key] = CheckedUpdateData[key];
+        }
+      }
+      // no need to chnage anthing if Nothing to update
+      if (Object.keys(updatedData).length === 0) {
+        console.log("No changes to update");
+        return;
+      }
+
+      // Create FormData only if there are changes
+      const formData = new FormData();
+
+      // Append fields to FormData
+      for (const key in updatedData) {
+        const value = updatedData[key];
+        if (value !== undefined && value !== null) {
+          formData.append(key, value);
+        }
+      }
+
+      // Add the ID to the FormData (this is required for the backend)
+      formData.append("id", CheckedUpdateData._id);
+
+      // Make the API call to update the banner
+      const response = await GetUpdateCategory({
+        data: formData,
+        id: CheckedUpdateData._id,
+      });
+
+      // If the update is successful, show success message
+      if (response?.data) {
+        SuccessToast("Banner updated successfully");
+      }
     } catch (error) {
-      console.log("error from banner.jsx updating category", error);
+      console.log("Error from banner.jsx upload banner:", error);
+    } finally {
+      // Close the dialog or reset the form as needed
+      setOpen(false);
+      setupdateData("");
     }
   };
 
@@ -153,8 +205,6 @@ const Category = () => {
             <Input
               label="Category Name"
               defaultValue={tempCategoryData.name}
-              onClick={(e) => (e.target.value = "")}
-              onBlur={(e) => (e.target.value = tempCategoryData.name)}
               onChange={(e) =>
                 setupdateData({ ...updateData, name: e.target.value })
               }
@@ -166,10 +216,6 @@ const Category = () => {
                   label="Description"
                   defaultValue={tempCategoryData.description}
                   className="h-[40px] p-5"
-                  onClick={(e) => (e.target.value = "")}
-                  onBlur={(e) =>
-                    (e.target.value = tempCategoryData.description)
-                  }
                   onChange={(e) =>
                     setupdateData({
                       ...updateData,
@@ -181,11 +227,11 @@ const Category = () => {
 
               <div className="mt-2">
                 {/* Img design start */}
-                <div className="w-full relative">
+                <div className="w-full relative ">
                   <img
                     src={tempCategoryData.image}
                     alt={tempCategoryData.image}
-                    className="h-auto w-full object-cover"
+                    className="max-h-[300px] w-full object-cover overflow-hidden"
                   />
 
                   <div className="h-full w-full absolute left-0 top-0">
@@ -249,7 +295,9 @@ const Category = () => {
             <Button variant="filled" onClick={handleOpen} color="red">
               Cancel
             </Button>
-            <Button onClick={handleUpdateCategory}>Update</Button>
+            <Button onClick={handleUpdatedbanner} loading={isUpading}>
+              Update
+            </Button>
           </div>
         </DialogFooter>
       </Dialog>
