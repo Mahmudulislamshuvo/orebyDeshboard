@@ -11,14 +11,29 @@ import {
 import React from "react";
 import TableWithActions from "../CommonComponents/TableWIthAction";
 import { Select, Option } from "@material-tailwind/react";
+import { useGetAllSubCategoryQuery } from "../../Features/Api/exclusiveApi";
 
 const Subcategory = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(!open);
+  const TABLE_HEAD = ["Title", "Banner", "Description", "Date", "Actions"];
+  const { isLoading, data, isError } = useGetAllSubCategoryQuery();
   return (
     <div>
       <div className="flex flex-col gap-y-5">
         <Input label="Category Name" />
+        <Textarea
+          color="green"
+          label="Description"
+          // defaultValue={tempCategoryData.description}
+          className="h-[40px] p-5"
+          // onChange={(e) =>
+          //   setupdateData({
+          //     ...updateData,
+          //     description: e.target.value,
+          //   })
+          // }
+        />
         <div className="w-full text-lg">
           <Select label="Select Category">
             <Option>Material Tailwind HTML</Option>
@@ -39,7 +54,14 @@ const Subcategory = () => {
           Upload
         </Button>
       </div>
-      <TableWithActions hightforTable={"550px"} handleOpen={handleOpen} />
+      <TableWithActions
+        hightforTable={"550px"}
+        handleOpen={handleOpen}
+        data={data?.data}
+        // loading={GetCategoryLoading}
+        // handleDete={handleOpentwo}
+        TABLE_HEAD={TABLE_HEAD}
+      />
       {/* Dialog for managing item */}
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
         <DialogHeader className="relative m-0 block">

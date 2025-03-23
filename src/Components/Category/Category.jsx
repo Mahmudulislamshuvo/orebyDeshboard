@@ -10,12 +10,13 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import {
+  useDeleteCategoryMutation,
   useGetAllCategoryQuery,
   useGetCreateCategoryMutation,
   useGetUpdateCategoryMutation,
 } from "../../Features/Api/exclusiveApi.js";
 import { useForm } from "react-hook-form";
-import { SuccessToast } from "../../utils/Toastify";
+import { InfoToast, SuccessToast } from "../../utils/Toastify";
 import { isCheckValue } from "../../librarry/valueChecker.js";
 
 const TABLE_HEAD = ["Title", "Banner", "Description", "Date", "Actions"];
@@ -29,6 +30,7 @@ const Category = () => {
     reset,
   } = useForm();
   const [open, setOpen] = React.useState(false);
+  const [openTwo, setOpenTwo] = React.useState(false);
 
   const [tempCategoryData, settempCategoryData] = useState({});
   const [updateData, setupdateData] = useState({
@@ -47,6 +49,8 @@ const Category = () => {
     useGetCreateCategoryMutation();
   const [GetUpdateCategory, { isLoading: isUpading }] =
     useGetUpdateCategoryMutation();
+  const [DeleteCategory, { isLoading: isDeletingCategory }] =
+    useDeleteCategoryMutation();
   // handle dialog open
   const handleOpen = (item) => {
     if (item) {
@@ -135,6 +139,26 @@ const Category = () => {
     }
   };
 
+  const handleOpentwo = (id) => {
+    settempCategoryData(id);
+    setOpenTwo((prev) => !prev);
+  };
+
+  const handleDeleteCategory = async (id) => {
+    try {
+      const DeletingId = tempCategoryData?._id;
+
+      const response = await DeleteCategory(DeletingId);
+      if (response?.data) {
+        InfoToast("Banner deleted successfully");
+      }
+    } catch (error) {
+      console.log("Error from banner.jsx handleDeleteBanner:", error);
+    } finally {
+      setOpenTwo(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-y-5">
@@ -188,7 +212,7 @@ const Category = () => {
         handleOpen={handleOpen}
         data={categoryData?.data}
         loading={GetCategoryLoading}
-        // handleDete={handleOpentwo}
+        handleDete={handleOpentwo}
         TABLE_HEAD={TABLE_HEAD}
       />
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
@@ -297,6 +321,29 @@ const Category = () => {
             </Button>
             <Button onClick={handleUpdatedbanner} loading={isUpading}>
               Update
+            </Button>
+          </div>
+        </DialogFooter>
+      </Dialog>
+
+      {/* dialog for Delete confirmation popup */}
+      <Dialog size="sm" open={openTwo} handler={handleOpentwo} className="p-4">
+        <DialogBody className="pb-2 space-y-4">
+          <div className="text-black-500 text-xl">
+            You are confirm to delete that banner
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <div className="flex gap-x-5">
+            <Button variant="filled" onClick={handleOpentwo} color="green">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteCategory}
+              color="red"
+              loading={isDeletingCategory}
+            >
+              Confirm
             </Button>
           </div>
         </DialogFooter>
