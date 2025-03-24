@@ -145,7 +145,6 @@ const Category = () => {
   const handleDeleteCategory = async (id) => {
     try {
       const DeletingId = tempCategoryData?._id;
-
       const response = await DeleteCategory(DeletingId);
       if (response?.data) {
         InfoToast("Banner deleted successfully");

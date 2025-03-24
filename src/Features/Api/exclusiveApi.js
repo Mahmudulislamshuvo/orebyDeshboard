@@ -5,7 +5,7 @@ export const exclusiveApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
   }),
-  tagTypes: ["banner", "category", "subcategory"],
+  tagTypes: ["banner", "category", "subcategory", "product"],
   endpoints: (builder) => ({
     uploadBanner: builder.mutation({
       query: (data) => ({
@@ -78,10 +78,23 @@ export const exclusiveApi = createApi({
       }),
       invalidatesTags: ["subcategory"],
     }),
+    SubCategoryDelete: builder.mutation({
+      query: (id) => ({
+        url: `subcategory/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["subcategory"],
+    }),
+    GetAllProducts: builder.query({
+      query: () => "product",
+      providesTags: ["product"],
+    }),
   }),
 });
 
 export const {
+  useGetAllProductsQuery,
+  useSubCategoryDeleteMutation,
   useUpdatingSubCategoryMutation,
   useGetSingleSubCategoryQuery,
   useDeleteCategoryMutation,
