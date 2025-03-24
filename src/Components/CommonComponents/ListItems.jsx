@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Card, Typography } from "@material-tailwind/react";
 import moment from "moment/moment";
 
-const TableWithActions = ({
+const ListItems = ({
   hightforTable = "500px",
   handleOpen,
   data,
@@ -127,16 +127,7 @@ const TableWithActions = ({
                             Delete
                           </Button>
                           <Button
-                            onClick={() =>
-                              handleOpen({
-                                name,
-                                image,
-                                _id,
-                                ...(description && {
-                                  description: description,
-                                }),
-                              })
-                            }
+                            onClick={() => handleOpen({ _id })}
                             color="green"
                           >
                             Edit
@@ -155,4 +146,4 @@ const TableWithActions = ({
   );
 };
 
-export default TableWithActions;
+export default ListItems;

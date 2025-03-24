@@ -66,10 +66,24 @@ export const exclusiveApi = createApi({
       query: () => "subcategory",
       providesTags: ["subcategory"],
     }),
+    GetSingleSubCategory: builder.query({
+      query: (id) => `subcategory/${id}`,
+      providesTags: ["subcategory"],
+    }),
+    UpdatingSubCategory: builder.mutation({
+      query: ({ data, id }) => ({
+        url: `subcategory/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["subcategory"],
+    }),
   }),
 });
 
 export const {
+  useUpdatingSubCategoryMutation,
+  useGetSingleSubCategoryQuery,
   useDeleteCategoryMutation,
   useGetAllSubCategoryQuery,
   useGetUpdateCategoryMutation,

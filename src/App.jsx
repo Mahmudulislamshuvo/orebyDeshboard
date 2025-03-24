@@ -18,6 +18,7 @@ import WelcomeText from "./Components/Welcome/WelcomText";
 import Inbox from "./Components/Inbox/Inbox";
 import Login from "./Components/Login/Login";
 import Registration from "./Components/Registration/Registration";
+import View from "./Components/CommonComponents/View";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,6 +35,7 @@ const router = createBrowserRouter(
         <Route path="/singleorder" element={<OrderDetails />}></Route>
         <Route path="/inbox" element={<Inbox />}></Route>
         <Route path="/" element={<WelcomeText />}></Route>
+        <Route path="/view/:id" element={<View />}></Route>
       </Route>
       <Route path="/login" element={<Login />}></Route>
       <Route path="/signup" element={<Registration />}></Route>

@@ -60,9 +60,7 @@ const Category = () => {
         _id: item._id,
       });
     }
-
-    // setOpen((prev) => !prev);
-    setOpen(true);
+    setOpen((prev) => !prev);
   };
 
   // handle create category
