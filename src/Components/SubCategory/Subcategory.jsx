@@ -33,8 +33,6 @@ const Subcategory = () => {
     setOpen((prev) => !prev);
   };
 
-  console.log(DataAllcategory);
-
   return (
     <div>
       <div className="flex flex-col gap-y-5">
@@ -51,17 +49,19 @@ const Subcategory = () => {
           // }
         />
         <div className="w-full text-lg">
-          {/* <Select label="Select Category">
-            {DataAllcategory?.data?.map((items) => (
-              <Option key={items._id} value={items._id}>
-                {items.name}
-              </Option>
-            ))}
-          </Select> */}
-
-          <Select label="Select Category">
-            <Option>Material Tailwind Svelte</Option>
-          </Select>
+          {loadingAllcategory ? (
+            <div>Loading categories...</div>
+          ) : DataAllcategory?.data ? (
+            <Select label="Select Category">
+              {DataAllcategory?.data?.map((items) => (
+                <Option key={items._id} value={items._id}>
+                  {items.name}
+                </Option>
+              ))}
+            </Select>
+          ) : (
+            <div>Error: No categories available</div>
+          )}
         </div>
         <Button
           variant="filled"
