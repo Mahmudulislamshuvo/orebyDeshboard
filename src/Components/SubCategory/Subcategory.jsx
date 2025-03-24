@@ -9,13 +9,14 @@ import {
 import React, { useState } from "react";
 import { Select, Option } from "@material-tailwind/react";
 import {
+  useCreateSubcategoryMutation,
   useGetAllCategoryQuery,
   useGetAllSubCategoryQuery,
   useSubCategoryDeleteMutation,
 } from "../../Features/Api/exclusiveApi";
 import { useNavigate } from "react-router-dom";
 import ListItems from "../CommonComponents/ListItems";
-import { InfoToast } from "../../utils/Toastify";
+import { InfoToast, SuccessToast } from "../../utils/Toastify";
 import { useForm, Controller } from "react-hook-form";
 
 const Subcategory = () => {
@@ -25,6 +26,7 @@ const Subcategory = () => {
     setValue,
     trigger,
     formState: { errors },
+    reset,
     control,
   } = useForm();
   const navigate = useNavigate();
@@ -34,8 +36,13 @@ const Subcategory = () => {
     data: DataAllcategory,
     isError: ErrorAllcategory,
   } = useGetAllCategoryQuery();
+
   const [SubCategoryDelete, { isLoading: isDeleteSubcategory }] =
     useSubCategoryDeleteMutation();
+
+  const [CreateSubcategory, { isLoading: isSubcategoryCreating }] =
+    useCreateSubcategoryMutation();
+
   const [open, setOpen] = React.useState(false);
   const [tempData, settempData] = useState({});
   const [updateData, setupdateData] = useState({
@@ -74,21 +81,27 @@ const Subcategory = () => {
     }
   };
 
-  const createSubCategory = async (data) => {
+  const handleCreateSubCategory = async (data) => {
     try {
-      console.log(updateData);
-      console.log("data form hook", data);
+      const response = await CreateSubcategory(data).unwrap();
+      if (response?.data) {
+        SuccessToast("Subcategory created successfully!");
+      }
     } catch (error) {
-      console.log(
-        "Error from Subcategory.jsx createSubCategory function",
-        error
-      );
+      console.log("Error while creating subcategory:", error);
+    } finally {
+      setupdateData({
+        name: "",
+        description: "",
+        category: "",
+      });
+      reset();
     }
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit(createSubCategory)}>
+      <form onSubmit={handleSubmit(handleCreateSubCategory)}>
         <div className="flex flex-col gap-y-5">
           <Input
             label="Category Name"
@@ -159,7 +172,6 @@ const Subcategory = () => {
             loading={false}
             className="w-[15%] text-sm"
             color="green"
-            onClick={createSubCategory}
             type="submit"
           >
             Upload

@@ -89,10 +89,19 @@ export const exclusiveApi = createApi({
       query: () => "product",
       providesTags: ["product"],
     }),
+    CreateSubcategory: builder.mutation({
+      query: (data) => ({
+        url: `subcategory`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["subcategory"],
+    }),
   }),
 });
 
 export const {
+  useCreateSubcategoryMutation,
   useGetAllProductsQuery,
   useSubCategoryDeleteMutation,
   useUpdatingSubCategoryMutation,

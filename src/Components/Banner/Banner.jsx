@@ -60,6 +60,7 @@ const Banner = () => {
     isLoading: isGettingBannersLoading,
     isError: getBannersError,
   } = useGetAllBannerQuery();
+
   const [UpdateBanner, { isLoading: isUpdatingBanner }] =
     useUpdateBannerMutation();
   const [DeleteBanner, { isLoading: isDeletingBanner }] =
