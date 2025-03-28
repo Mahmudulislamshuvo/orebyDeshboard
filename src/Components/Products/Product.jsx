@@ -6,13 +6,11 @@ import Fileinput from "../CommonComponents/Fileinput";
 import {
   useCreateProductMutation,
   useGetAllCategoryQuery,
-  useGetAllSubCategoryQuery,
   useGetSingleCategoryQuery,
 } from "../../Features/Api/exclusiveApi";
 
 const Product = () => {
   const { quill, quillRef } = useQuill();
-  const [editorValue, setEditorValue] = useState("");
 
   const {
     isLoading: CategoryLoading,
@@ -48,7 +46,6 @@ const Product = () => {
     if (quill) {
       quill.on("text-change", () => {
         const newDescription = quill.root.innerHTML;
-        setEditorValue(newDescription);
         // Update productData state with new description
         setproductData((prevState) => ({
           ...prevState,
@@ -74,29 +71,6 @@ const Product = () => {
     }
   };
 
-  // handleCatgory
-  // const handleCategory = (value) => {
-  //   setcategoryId(value);
-  //   setproductData({ ...productData, category: value });
-  // };
-
-  // Modify your handleCategory function like this:
-  const handleCategory = (value) => {
-    setcategoryId(value);
-    setproductData((prev) => ({
-      ...prev,
-      category: value,
-      subCategory: "", // Reset subCategory when category changes
-    }));
-  };
-
-  const handleSubcategory = (value) => {
-    setproductData((prev) => ({
-      ...prev,
-      subCategory: value,
-    }));
-  };
-
   // Handle create product
   const handleCreateProduct = async () => {
     try {
@@ -113,8 +87,6 @@ const Product = () => {
       console.log("from Product.jsx Create product", error);
     }
   };
-
-  // console.log(categoryId);
 
   return (
     <div className="flex flex-col gap-y-5 p-5 max-w-7xl mx-auto">
@@ -257,7 +229,14 @@ const Product = () => {
                 label="Select Category"
                 className="w-full"
                 name="category"
-                onChange={handleCategory}
+                onChange={(e) => {
+                  setcategoryId(e);
+                  setproductData((prev) => ({
+                    ...prev,
+                    category: e,
+                    subCategory: "",
+                  }));
+                }}
                 value={productData.category}
               >
                 {categoryData?.data?.map((items) => (
@@ -268,6 +247,7 @@ const Product = () => {
               </Select>
             )}
           </div>
+          {/*=== my poor way ===*/}
           {/* <div className="w-full">
             {singleCatData == null ? (
               <Select disabled label="Select Sub Category" className="w-full">
@@ -290,7 +270,7 @@ const Product = () => {
               </Select>
             )}
           </div> */}
-          {/* =======================good from deepseek=================== */}
+          {/* =======================good way to manege this=================== */}
           <div className="w-full">
             {!categoryId ? (
               <Select disabled label="Select Sub Category" className="w-full">
@@ -310,7 +290,12 @@ const Product = () => {
                 label="Select Sub Category"
                 className="w-full"
                 name="subCategory"
-                onChange={handleSubcategory}
+                onChange={(e) =>
+                  setproductData((prev) => ({
+                    ...prev,
+                    subCategory: e,
+                  }))
+                }
                 value={productData.subCategory}
               >
                 {singleCatData.data.subCategory.map((items) => (
