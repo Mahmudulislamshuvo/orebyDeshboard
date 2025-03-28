@@ -4,8 +4,10 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
 import Fileinput from "../CommonComponents/Fileinput";
 import {
+  useCreateProductMutation,
   useGetAllCategoryQuery,
   useGetAllSubCategoryQuery,
+  useGetSingleCategoryQuery,
 } from "../../Features/Api/exclusiveApi";
 
 const Product = () => {
@@ -13,26 +15,32 @@ const Product = () => {
   const [editorValue, setEditorValue] = useState("");
 
   const {
-    isLoading: SubCategoryLoading,
-    data: SubcategoryData,
-    isError,
-  } = useGetAllSubCategoryQuery();
-  const {
     isLoading: CategoryLoading,
     data: categoryData,
     isError: SubcategoryError,
   } = useGetAllCategoryQuery();
+  const [CreateProduct, { isLoading: isProductLoading }] =
+    useCreateProductMutation();
+
+  const [categoryId, setcategoryId] = useState(null);
   const [productData, setproductData] = useState({
     name: "",
     description: "",
-    price: "",
+    price: 0,
     category: "",
     subCategory: "",
-    discount: "",
-    stock: "",
+    discount: 0,
+    stock: 0,
     review: "",
-    rating: "",
+    rating: 0,
     image: "",
+  });
+  const {
+    isLoading: isSinglrCatLoading,
+    data: singleCatData,
+    isError: singleCatError,
+  } = useGetSingleCategoryQuery(categoryId, {
+    skip: !categoryId,
   });
 
   // quil things
@@ -54,10 +62,59 @@ const Product = () => {
   //  Handle change all inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setproductData({ ...productData, [name]: value });
+    if (
+      name == "price" ||
+      name == "discount" ||
+      name == "stock" ||
+      name == "rating"
+    ) {
+      setproductData({ ...productData, [name]: parseInt(value) });
+    } else {
+      setproductData({ ...productData, [name]: value });
+    }
   };
 
-  console.log(productData);
+  // handleCatgory
+  // const handleCategory = (value) => {
+  //   setcategoryId(value);
+  //   setproductData({ ...productData, category: value });
+  // };
+
+  // Modify your handleCategory function like this:
+  const handleCategory = (value) => {
+    setcategoryId(value);
+    setproductData((prev) => ({
+      ...prev,
+      category: value,
+      subCategory: "", // Reset subCategory when category changes
+    }));
+  };
+
+  const handleSubcategory = (value) => {
+    setproductData((prev) => ({
+      ...prev,
+      subCategory: value,
+    }));
+  };
+
+  // Handle create product
+  const handleCreateProduct = async () => {
+    try {
+      const formData = new FormData();
+
+      Object.keys(productData).forEach((key) =>
+        formData.append(key, productData[key])
+      );
+      if (productData.image) formData.append("image", productData.image);
+
+      const response = await CreateProduct(formData).unwrap();
+      console.log(response);
+    } catch (error) {
+      console.log("from Product.jsx Create product", error);
+    }
+  };
+
+  // console.log(categoryId);
 
   return (
     <div className="flex flex-col gap-y-5 p-5 max-w-7xl mx-auto">
@@ -139,6 +196,8 @@ const Product = () => {
               className="w-full"
               name="discount"
               onChange={handleChange}
+              type="number"
+              min="0"
             />
           </div>
           <div className="w-full">
@@ -148,6 +207,8 @@ const Product = () => {
               className="w-full"
               name="stock"
               onChange={handleChange}
+              type="number"
+              min="0"
             />
           </div>
           <div className="w-full">
@@ -157,12 +218,14 @@ const Product = () => {
               className="w-full"
               name="rating"
               onChange={handleChange}
+              type="number"
+              min="0"
             />
           </div>
           <div className="w-full">
             <Input
               color="blue"
-              label="Rating"
+              label="Reviews"
               className="w-full"
               name="review"
               onChange={handleChange}
@@ -181,6 +244,7 @@ const Product = () => {
               className="w-full"
               name="price"
               onChange={handleChange}
+              min="0"
             />
           </div>
           <div className="w-full text-lg">
@@ -193,9 +257,7 @@ const Product = () => {
                 label="Select Category"
                 className="w-full"
                 name="category"
-                onChange={(e) =>
-                  setproductData({ ...productData, category: e })
-                }
+                onChange={handleCategory}
                 value={productData.category}
               >
                 {categoryData?.data?.map((items) => (
@@ -206,29 +268,64 @@ const Product = () => {
               </Select>
             )}
           </div>
-
-          <div className="w-full">
-            {SubCategoryLoading ? (
-              <div className="border border-p-3">
-                Suv Category Data loading...
-              </div>
-            ) : SubcategoryData == null ? (
-              <div>Sub No Category available here</div>
+          {/* <div className="w-full">
+            {singleCatData == null ? (
+              <Select disabled label="Select Sub Category" className="w-full">
+                <Option>No Subcategory available here</Option>
+              </Select>
             ) : (
               <Select
+                key={categoryId}
                 label="Select Sub Category"
                 className="w-full"
                 name="subCategory"
-                onChange={(e) =>
-                  setproductData({ ...productData, subCategory: e })
-                }
+                onChange={handleSubcategory}
                 value={productData.subCategory}
               >
-                {SubcategoryData?.data?.map((items) => (
+                {singleCatData?.data?.subCategory?.map((items) => (
+                  <Option value={items?._id} key={items?._id}>
+                    {items?.name}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </div> */}
+          {/* =======================good from deepseek=================== */}
+          <div className="w-full">
+            {!categoryId ? (
+              <Select disabled label="Select Sub Category" className="w-full">
+                <Option>Select a category first</Option>
+              </Select>
+            ) : isSinglrCatLoading ? (
+              <Select
+                disabled
+                label="Loading subcategories..."
+                className="w-full"
+              >
+                <Option>Loading...</Option>
+              </Select>
+            ) : singleCatData?.data?.subCategory?.length > 0 ? (
+              <Select
+                key={categoryId + productData.subCategory}
+                label="Select Sub Category"
+                className="w-full"
+                name="subCategory"
+                onChange={handleSubcategory}
+                value={productData.subCategory}
+              >
+                {singleCatData.data.subCategory.map((items) => (
                   <Option value={items._id} key={items._id}>
                     {items.name}
                   </Option>
                 ))}
+              </Select>
+            ) : (
+              <Select
+                disabled
+                label="No subcategories available"
+                className="w-full"
+              >
+                <Option>No subcategories found</Option>
               </Select>
             )}
           </div>
@@ -237,7 +334,10 @@ const Product = () => {
 
       {/* Save/Submit Button */}
       <div className="flex justify-center">
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+        <button
+          onClick={handleCreateProduct}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+        >
           Create Product
         </button>
       </div>
