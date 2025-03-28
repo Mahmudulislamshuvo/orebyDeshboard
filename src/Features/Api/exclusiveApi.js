@@ -85,10 +85,6 @@ export const exclusiveApi = createApi({
       }),
       invalidatesTags: ["subcategory"],
     }),
-    GetAllProducts: builder.query({
-      query: () => "product",
-      providesTags: ["product"],
-    }),
     CreateSubcategory: builder.mutation({
       query: (data) => ({
         url: `subcategory`,
@@ -109,14 +105,18 @@ export const exclusiveApi = createApi({
       query: (id) => `category/${id}`,
       providesTags: ["category"],
     }),
+    GetAllProducts: builder.query({
+      query: () => "product",
+      providesTags: ["product"],
+    }),
   }),
 });
 
 export const {
+  useGetAllProductsQuery,
   useGetSingleCategoryQuery,
   useCreateProductMutation,
   useCreateSubcategoryMutation,
-  useGetAllProductsQuery,
   useSubCategoryDeleteMutation,
   useUpdatingSubCategoryMutation,
   useGetSingleSubCategoryQuery,

@@ -4,7 +4,6 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
 import Fileinput from "../CommonComponents/Fileinput";
 import {
-  useCreateProductMutation,
   useGetAllCategoryQuery,
   useGetSingleCategoryQuery,
 } from "../../Features/Api/exclusiveApi";
@@ -13,7 +12,7 @@ import { SuccessToast } from "../../utils/Toastify";
 
 const Product = () => {
   const { quill, quillRef } = useQuill();
-
+  const [quilvalue, setquilvalue] = useState("");
   const {
     isLoading: CategoryLoading,
     data: categoryData,
@@ -85,20 +84,26 @@ const Product = () => {
       console.log("from Product.jsx Create product", error);
     } finally {
       setuploadLoading(false);
+      setcategoryId("");
       setproductData({
         name: "",
         description: "",
-        price: 0,
+        price: "",
         category: "",
         subCategory: "",
-        discount: 0,
-        stock: 0,
+        discount: "",
+        stock: "",
         review: "",
-        rating: 0,
+        rating: "",
         image: "",
       });
+      if (quill) {
+        quill.setContents([]);
+      }
     }
   };
+
+  console.log(productData);
 
   return (
     <div className="flex flex-col gap-y-5 p-5 max-w-7xl mx-auto">
@@ -160,6 +165,8 @@ const Product = () => {
                   </p>
                 </div>
                 <input
+                  multiple
+                  accept="image/*"
                   id="dropzone-file"
                   type="file"
                   className="hidden"
@@ -184,6 +191,7 @@ const Product = () => {
               onChange={handleChange}
               type="number"
               min="0"
+              value={productData.discount}
             />
           </div>
           <div className="w-full">
@@ -195,6 +203,7 @@ const Product = () => {
               onChange={handleChange}
               type="number"
               min="0"
+              value={productData.stock}
             />
           </div>
           <div className="w-full">
@@ -207,6 +216,7 @@ const Product = () => {
               type="number"
               min="0"
               max="5"
+              value={productData.rating}
             />
           </div>
           <div className="w-full">
@@ -216,6 +226,7 @@ const Product = () => {
               className="w-full"
               name="review"
               onChange={handleChange}
+              value={productData.review}
             />
           </div>
         </div>
@@ -232,6 +243,7 @@ const Product = () => {
               name="price"
               onChange={handleChange}
               min="0"
+              value={productData.price}
             />
           </div>
           <div className="w-full text-lg">
