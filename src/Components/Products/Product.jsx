@@ -1,4 +1,4 @@
-import { Input, Option, Select } from "@material-tailwind/react";
+import { Button, Input, Option, Select } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css"; // Add css for snow theme
@@ -8,6 +8,8 @@ import {
   useGetAllCategoryQuery,
   useGetSingleCategoryQuery,
 } from "../../Features/Api/exclusiveApi";
+import { axiosInstance } from "../../Features/Api/axiosInstance";
+import { SuccessToast } from "../../utils/Toastify";
 
 const Product = () => {
   const { quill, quillRef } = useQuill();
@@ -17,8 +19,6 @@ const Product = () => {
     data: categoryData,
     isError: SubcategoryError,
   } = useGetAllCategoryQuery();
-  const [CreateProduct, { isLoading: isProductLoading }] =
-    useCreateProductMutation();
 
   const [categoryId, setcategoryId] = useState(null);
   const [productData, setproductData] = useState({
@@ -40,6 +40,7 @@ const Product = () => {
   } = useGetSingleCategoryQuery(categoryId, {
     skip: !categoryId,
   });
+  const [uploadLoading, setuploadLoading] = useState(false);
 
   // quil things
   useEffect(() => {
@@ -74,17 +75,28 @@ const Product = () => {
   // Handle create product
   const handleCreateProduct = async () => {
     try {
-      const formData = new FormData();
-
-      Object.keys(productData).forEach((key) =>
-        formData.append(key, productData[key])
-      );
-      if (productData.image) formData.append("image", productData.image);
-
-      const response = await CreateProduct(formData).unwrap();
+      setuploadLoading(true);
+      const response = await axiosInstance.post("product", productData);
       console.log(response);
+      if (response.statusText == "Created") {
+        SuccessToast("Product Created succesfull");
+      }
     } catch (error) {
       console.log("from Product.jsx Create product", error);
+    } finally {
+      setuploadLoading(false);
+      setproductData({
+        name: "",
+        description: "",
+        price: 0,
+        category: "",
+        subCategory: "",
+        discount: 0,
+        stock: 0,
+        review: "",
+        rating: 0,
+        image: "",
+      });
     }
   };
 
@@ -118,7 +130,9 @@ const Product = () => {
               <label
                 htmlFor="dropzone-file"
                 className={
-                  "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                  productData.image
+                    ? "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-green-200  dark:bg-gray-700 hover:bg-green-400 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                    : "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
                 }
               >
                 <div className="flex flex-col justify-center items-center pb-6 pt-5">
@@ -192,6 +206,7 @@ const Product = () => {
               onChange={handleChange}
               type="number"
               min="0"
+              max="5"
             />
           </div>
           <div className="w-full">
@@ -319,12 +334,13 @@ const Product = () => {
 
       {/* Save/Submit Button */}
       <div className="flex justify-center">
-        <button
+        <Button
+          loading={uploadLoading}
           onClick={handleCreateProduct}
           className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
         >
           Create Product
-        </button>
+        </Button>
       </div>
     </div>
   );
