@@ -13,7 +13,12 @@ import {
   Typography,
   Input,
 } from "@material-tailwind/react";
-import { useGetAllProductsQuery } from "../../Features/Api/exclusiveApi.js";
+import {
+  useGetAllProductsQuery,
+  useProductDeleteMutation,
+} from "../../Features/Api/exclusiveApi.js";
+import ProductListSkeliton from "../Skelitons/ProductListSkeliton.jsx";
+import ProductError from "../Errors/ProductError.jsx";
 
 const Productlist = () => {
   const [open, setOpen] = React.useState(false);
@@ -26,44 +31,71 @@ const Productlist = () => {
     isError: getAllProductError,
   } = useGetAllProductsQuery();
 
-  // console.log(getAllProductdata?.data);
+  const [productDelete, { isLoading: productdeletingLoading }] =
+    useProductDeleteMutation();
 
+  // handle onRetry
+  const onRetry = () => {
+    console.log("hi");
+    window.location.reload();
+  };
+
+  if (GetAllproductLoading) {
+    return <ProductListSkeliton />;
+  }
+
+  if (getAllProductError) {
+    return <ProductError onRetry={onRetry} />;
+  }
   return (
     <div>
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" class="px-6 py-3">
+              <th scope="col" className="px-6 py-3">
                 Product name
               </th>
-              <th scope="col" class="px-6 py-3">
-                Color
+              <th scope="col" className="px-6 py-3">
+                Image
               </th>
-              <th scope="col" class="px-6 py-3">
+              <th scope="col" className="px-6 py-3">
                 Category
               </th>
-              <th scope="col" class="px-6 py-3">
+              <th scope="col" className="px-6 py-3">
+                Sub Category
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Price
               </th>
-              <th scope="col" class="px-6 py-3 text-center">
+              <th scope="col" className="px-6 py-3 text-center">
                 Action
               </th>
             </tr>
           </thead>
           <tbody>
             {getAllProductdata?.data?.map((items) => (
-              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+              <tr
+                key={items._id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+              >
                 <th
                   scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white font-bold"
                 >
                   {items.name}
                 </th>
-                <td class="px-6 py-4">Silver</td>
-                <td class="px-6 py-4">Laptop</td>
-                <td class="px-6 py-4">$2999</td>
-                <td class="px-6 py-4 text-center">
+                <td className="px-6 py-4">
+                  <img
+                    src={items.image}
+                    alt={items.image}
+                    className="h-[150px] rounded-[15px] object-fit-cover"
+                  />
+                </td>
+                <td className="px-6 py-4">{items.category.name}</td>
+                <td className="px-6 py-4">{items.subCategory.name}</td>
+                <td className="px-6 py-4">{items.price}</td>
+                <td className="px-6 py-4 text-center">
                   <div className=" flex gap-x-5 justify-center text-center">
                     <Button color="red">Delete</Button>
                     <Button onClick={handleOpen} color="green">
