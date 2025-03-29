@@ -12,7 +12,6 @@ import { SuccessToast } from "../../utils/Toastify";
 
 const Product = () => {
   const { quill, quillRef } = useQuill();
-  const [quilvalue, setquilvalue] = useState("");
   const {
     isLoading: CategoryLoading,
     data: categoryData,
