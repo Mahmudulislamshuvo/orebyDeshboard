@@ -102,8 +102,6 @@ const Product = () => {
     }
   };
 
-  console.log(productData);
-
   return (
     <div className="flex flex-col gap-y-5 p-5 max-w-7xl mx-auto">
       {/* Product Name */}
