@@ -116,10 +116,15 @@ export const exclusiveApi = createApi({
       }),
       invalidatesTags: ["product"],
     }),
+    GetSingleProduct: builder.query({
+      query: (id) => `product/${id}`,
+      providesTags: ["product"],
+    }),
   }),
 });
 
 export const {
+  useGetSingleProductQuery,
   useProductDeleteMutation,
   useGetAllProductsQuery,
   useGetSingleCategoryQuery,

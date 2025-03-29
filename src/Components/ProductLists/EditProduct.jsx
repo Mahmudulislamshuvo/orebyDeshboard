@@ -2,19 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
 import {
   useGetAllCategoryQuery,
-  useGetAllProductsQuery,
   useGetSingleCategoryQuery,
+  useGetSingleProductQuery,
 } from "../../Features/Api/exclusiveApi";
-import { Input, Option, Select } from "@material-tailwind/react";
+import { Button, Input, Option, Select } from "@material-tailwind/react";
 import Fileinput from "../CommonComponents/Fileinput";
 import { useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import { isCheckValue } from "../../librarry/valueChecker";
 
 const EditProduct = () => {
   const { id } = useParams();
-  const { register, handleSubmit, setValue, getValues, control } = useForm();
+  const { register, handleSubmit, setValue, control, getValues } = useForm();
   const { quill, quillRef } = useQuill();
-  const [categoryId, setcategoryId] = useState(null);
+  const [categoryId, setCategoryId] = useState(null);
+  const [tempProductData, settempProductData] = useState(null);
 
   const {
     isLoading: isAllCatLoading,
@@ -22,60 +24,77 @@ const EditProduct = () => {
     isError: AllCatError,
   } = useGetAllCategoryQuery();
   const {
-    isLoading: isSinglrCatLoading,
+    isLoading: isSingleCatLoading,
     data: singleCatData,
     isError: singleCatError,
-  } = useGetSingleCategoryQuery(id);
-  const [productData, setproductData] = useState({
-    name: "",
-    description: "",
-    price: 0,
-    category: "",
-    subCategory: "",
-    discount: 0,
-    stock: 0,
-    review: "",
-    rating: 0,
-    image: "",
-  });
+  } = useGetSingleCategoryQuery(categoryId);
 
-  // quil things
+  const {
+    isLoading: SingleProductLoading,
+    data: singleProductData,
+    isError: singleProductError,
+  } = useGetSingleProductQuery(id);
+
+  // Update your product data effect
+  useEffect(() => {
+    if (singleProductData?.data) {
+      settempProductData(singleProductData.data);
+      setValue("category", singleProductData.data.category._id);
+      setValue("subCategory", singleProductData.data.subCategory._id);
+      setCategoryId(singleProductData.data.category._id);
+    }
+  }, [singleProductData, setValue]);
+
+  // to show default value on quill
+  useEffect(() => {
+    if (quill && tempProductData?.description) {
+      quill.root.innerHTML = tempProductData.description;
+    }
+  }, [quill, tempProductData?.description]);
+
+  // Handle Quill editor content change
   useEffect(() => {
     if (quill) {
       quill.on("text-change", () => {
         const newDescription = quill.root.innerHTML;
-        // Update productData state with new description
-        setproductData((prevState) => ({
-          ...prevState,
-          description: newDescription,
-        }));
         setValue("description", newDescription);
       });
     }
-  }, [quill]);
-  // quil things end
+  }, [quill, setValue]);
 
-  //  Handle change all inputs
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (
-      name == "price" ||
-      name == "discount" ||
-      name == "stock" ||
-      name == "rating"
-    ) {
-      setproductData({ ...productData, [name]: parseInt(value) });
-    } else {
-      setproductData({ ...productData, [name]: value });
+  // Handle form submission
+  const handleSubmitForm = (values) => {
+    if (!tempProductData) return;
+
+    const initialValues = {
+      name: tempProductData.name,
+      description: tempProductData.description,
+      price: tempProductData.price,
+      category: tempProductData.category?._id,
+      subCategory: tempProductData.subCategory?._id,
+      discount: tempProductData.discount,
+      stock: tempProductData.stock,
+      review: tempProductData.review,
+      rating: tempProductData.rating,
+    };
+
+    // 1. Find changed values
+    const changedValues = {};
+    for (const key in values) {
+      if (values[key] !== initialValues[key]) {
+        changedValues[key] = values[key];
+      }
     }
-  };
 
-  //   handle submit
-  const handlesubmit = () => {};
+    // 2. Filter out empty values using your utility
+    const filteredChanges = isCheckValue(changedValues);
+
+    console.log("Final payload:", filteredChanges);
+  };
 
   return (
     <div>
-      <form onSubmit={handleSubmit(handlesubmit)}>
+      <form onSubmit={handleSubmit(handleSubmitForm)}>
         <div className="flex flex-col gap-y-5 p-5 max-w-7xl mx-auto">
           {/* Product Name */}
           <div>
@@ -83,22 +102,22 @@ const EditProduct = () => {
               color="blue"
               label="Product Name"
               className="w-full"
-              onChange={handleChange}
-              name="name"
-              value={productData.name}
+              defaultValue={tempProductData?.name}
+              {...register("name")}
             />
           </div>
+
           <div className="flex justify-between">
             {/* Quill Editor */}
-            <div className=" w-[48%]">
-              <div className="w-full h-[200px]">
+            <div className="w-[48%]">
+              <div className="w-full h-[200px] border rounded-md shadow-sm">
                 <div ref={quillRef} />
               </div>
             </div>
 
             {/* File Input Section */}
             <div className="w-[48%]">
-              <div className=" bg-white rounded-lg shadow-xl">
+              <div className="bg-white rounded-lg shadow-xl">
                 <Fileinput />
               </div>
             </div>
@@ -114,9 +133,10 @@ const EditProduct = () => {
                     color="blue"
                     label="Discount"
                     className="w-full"
-                    onChange={handleChange}
-                    name="discount"
-                    value={productData.discount}
+                    type="number"
+                    min={0}
+                    defaultValue={tempProductData?.discount}
+                    {...register("discount")}
                   />
                 </div>
                 <div className="w-full">
@@ -124,19 +144,22 @@ const EditProduct = () => {
                     color="blue"
                     label="Stock"
                     className="w-full"
-                    onChange={handleChange}
-                    name="stock"
-                    value={productData.stock}
+                    type="number"
+                    min={0}
+                    defaultValue={tempProductData?.stock}
+                    {...register("stock")}
                   />
                 </div>
                 <div className="w-full">
                   <Input
                     color="blue"
                     label="Rating"
-                    onChange={handleChange}
                     className="w-full"
-                    name="rating"
-                    value={productData.rating}
+                    type="number"
+                    min={0}
+                    max={5}
+                    defaultValue={tempProductData?.rating}
+                    {...register("rating")}
                   />
                 </div>
               </div>
@@ -148,43 +171,47 @@ const EditProduct = () => {
                     color="blue"
                     label="Price"
                     type="number"
-                    placeholder="Price"
-                    name="price"
                     className="w-full"
-                    onChange={handleChange}
-                    value={productData.price}
+                    min={0}
+                    defaultValue={tempProductData?.price}
+                    {...register("price")}
                   />
                 </div>
 
+                {/* Category Select */}
                 <div className="w-full">
                   {isAllCatLoading ? (
                     <Select disabled label="Select Category" className="w-full">
                       <Option>Category Loading...</Option>
                     </Select>
                   ) : (
-                    <Select
+                    <Controller
+                      control={control}
                       name="category"
-                      label="Select Category"
-                      className="w-full"
-                      onChange={(e) => {
-                        setcategoryId(e);
-                        setproductData((prev) => ({
-                          ...prev,
-                          category: e,
-                          subCategory: "",
-                        }));
-                      }}
-                      value={productData.category}
-                    >
-                      {AllCatData?.data?.map((items) => (
-                        <Option key={items._id} value={items._id}>
-                          {items.name}
-                        </Option>
-                      ))}
-                    </Select>
+                      render={({ field }) => (
+                        <Select
+                          label="Select Category"
+                          className="w-full"
+                          {...field}
+                          onChange={(selectedCategory) => {
+                            field.onChange(selectedCategory); // Use field.onChange
+                            setCategoryId(selectedCategory);
+                            setValue("subCategory", "");
+                          }}
+                          value={field.value || ""} // Add fallback empty string
+                        >
+                          {AllCatData?.data?.map((items) => (
+                            <Option key={items._id} value={items._id}>
+                              {items.name}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    />
                   )}
                 </div>
 
+                {/* Subcategory Select */}
                 <div className="w-full">
                   {!categoryId ? (
                     <Select
@@ -194,7 +221,7 @@ const EditProduct = () => {
                     >
                       <Option>Select a category first</Option>
                     </Select>
-                  ) : isSinglrCatLoading ? (
+                  ) : isSingleCatLoading ? (
                     <Select
                       disabled
                       label="Loading subcategories..."
@@ -203,25 +230,35 @@ const EditProduct = () => {
                       <Option>Loading...</Option>
                     </Select>
                   ) : singleCatData?.data?.subCategory?.length > 0 ? (
-                    <Select
-                      key={categoryId + productData.subCategory}
-                      label="Select Sub Category"
-                      className="w-full"
+                    <Controller
+                      control={control}
                       name="subCategory"
-                      onChange={(e) =>
-                        setproductData((prev) => ({
-                          ...prev,
-                          subCategory: e,
-                        }))
-                      }
-                      value={productData.subCategory}
-                    >
-                      {singleCatData?.data?.subCategory?.map((items) => (
-                        <Option value={items._id} key={items._id}>
-                          {items.name}
-                        </Option>
-                      ))}
-                    </Select>
+                      render={({ field }) => (
+                        <Select
+                          label="Select Sub Category"
+                          className="w-full"
+                          {...field}
+                          disabled={!categoryId || isSingleCatLoading}
+                          value={field.value || ""} // Add fallback empty string
+                          key={`${categoryId}-${field.value}`}
+                          onChange={(selectedSubCategory) => {
+                            field.onChange(selectedSubCategory); // Use field.onChange directly
+                          }}
+                        >
+                          {isSingleCatLoading ? (
+                            <Option disabled>Loading subcategories...</Option>
+                          ) : singleCatData?.data?.subCategory?.length > 0 ? (
+                            singleCatData.data.subCategory.map((items) => (
+                              <Option key={items._id} value={items._id}>
+                                {items.name}
+                              </Option>
+                            ))
+                          ) : (
+                            <Option disabled>No subcategories available</Option>
+                          )}
+                        </Select>
+                      )}
+                    />
                   ) : (
                     <Select
                       disabled
@@ -234,16 +271,25 @@ const EditProduct = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full mt-4">
               <Input
                 color="blue"
                 label="Review"
-                onChange={handleChange}
                 className="w-full"
-                name="review"
-                value={productData.review}
+                defaultValue={tempProductData?.review}
+                {...register("review")}
               />
             </div>
+          </div>
+
+          <div className="flex justify-end gap-x-10">
+            <Button type="reset" color="red" className="w-[20%] text-lg">
+              Cancel
+            </Button>
+            <Button type="submit" color="green" className="w-[20%] text-lg">
+              Update
+            </Button>
           </div>
         </div>
       </form>

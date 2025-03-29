@@ -79,7 +79,6 @@ const Productlist = () => {
   };
 
   const handleEditProduct = (id) => {
-    console.log(id);
     navigate(`/editproduct/${id}`);
   };
 
@@ -140,7 +139,7 @@ const Productlist = () => {
                       Delete
                     </Button>
                     <Button
-                      onClick={() => handleEditProduct(items.category._id)}
+                      onClick={() => handleEditProduct(items._id)}
                       color="green"
                     >
                       Edit
