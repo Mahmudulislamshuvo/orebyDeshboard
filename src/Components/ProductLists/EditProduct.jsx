@@ -4,12 +4,15 @@ import {
   useGetAllCategoryQuery,
   useGetSingleCategoryQuery,
   useGetSingleProductQuery,
+  useUpdateProductMutation,
 } from "../../Features/Api/exclusiveApi";
 import { Button, Input, Option, Select } from "@material-tailwind/react";
 import Fileinput from "../CommonComponents/Fileinput";
 import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { isCheckValue } from "../../librarry/valueChecker";
+import { axiosInstance } from "../../Features/Api/axiosInstance";
+import { SuccessToast } from "../../utils/Toastify";
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -17,6 +20,7 @@ const EditProduct = () => {
   const { quill, quillRef } = useQuill();
   const [categoryId, setCategoryId] = useState(null);
   const [tempProductData, settempProductData] = useState(null);
+  const [updatingLoading, setupdatingLoading] = useState(false);
 
   const {
     isLoading: isAllCatLoading,
@@ -63,33 +67,48 @@ const EditProduct = () => {
   }, [quill, setValue]);
 
   // Handle form submission
-  const handleSubmitForm = (values) => {
-    if (!tempProductData) return;
+  const handleSubmitForm = async (values) => {
+    try {
+      setupdatingLoading(true);
+      if (!tempProductData) return;
 
-    const initialValues = {
-      name: tempProductData.name,
-      description: tempProductData.description,
-      price: tempProductData.price,
-      category: tempProductData.category?._id,
-      subCategory: tempProductData.subCategory?._id,
-      discount: tempProductData.discount,
-      stock: tempProductData.stock,
-      review: tempProductData.review,
-      rating: tempProductData.rating,
-    };
+      const initialValues = {
+        name: tempProductData.name,
+        description: tempProductData.description,
+        price: tempProductData.price,
+        category: tempProductData.category?._id,
+        subCategory: tempProductData.subCategory?._id,
+        discount: tempProductData.discount,
+        stock: tempProductData.stock,
+        review: tempProductData.review,
+        rating: tempProductData.rating,
+      };
 
-    // 1. Find changed values
-    const changedValues = {};
-    for (const key in values) {
-      if (values[key] !== initialValues[key]) {
-        changedValues[key] = values[key];
+      // 1. Find changed values
+      const changedValues = {};
+      for (const key in values) {
+        if (values[key] !== initialValues[key]) {
+          changedValues[key] = values[key];
+        }
       }
+
+      // 2. Filter out empty values using your utility
+      const filteredChanges = isCheckValue(changedValues);
+
+      const response = await axiosInstance.put(
+        `product/${id}`,
+        filteredChanges
+      );
+      console.log(response);
+
+      if (response.statusText == "Created") {
+        SuccessToast("Product updating successfull");
+      }
+    } catch (error) {
+      console.log("error from EditProduct.jsx updating", error);
+    } finally {
+      setupdatingLoading(false);
     }
-
-    // 2. Filter out empty values using your utility
-    const filteredChanges = isCheckValue(changedValues);
-
-    console.log("Final payload:", filteredChanges);
   };
 
   return (
@@ -117,8 +136,51 @@ const EditProduct = () => {
 
             {/* File Input Section */}
             <div className="w-[48%]">
-              <div className="bg-white rounded-lg shadow-xl">
-                <Fileinput />
+              <div className=" bg-white rounded-lg shadow-xl">
+                <div className="flex justify-center w-full items-center">
+                  <label
+                    htmlFor="dropzone-file"
+                    className={
+                      "flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                    }
+                  >
+                    <div className="flex flex-col justify-center items-center pb-6 pt-5">
+                      <svg
+                        className="h-8 text-green-500 w-8 dark:text-gray-400 mb-4"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 16"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                        />
+                      </svg>
+                      <p className="text-gray-700 text-lg dark:text-gray-600 mb-2">
+                        <span className="font-semibold">Click to upload</span>{" "}
+                        or drag and drop
+                      </p>
+                      <p className="text-gray-500 text-xs dark:text-gray-400">
+                        SVG, PNG, JPG or GIF (MAX. 800x400px)
+                      </p>
+                    </div>
+                    <input
+                      multiple
+                      accept="image/*"
+                      id="dropzone-file"
+                      type="file"
+                      className="hidden"
+                      name="image"
+                      onChange={(e) => {
+                        setValue("image", e.target.files[0]);
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -287,7 +349,12 @@ const EditProduct = () => {
             <Button type="reset" color="red" className="w-[20%] text-lg">
               Cancel
             </Button>
-            <Button type="submit" color="green" className="w-[20%] text-lg">
+            <Button
+              type="submit"
+              color="green"
+              className="w-[20%] text-lg"
+              loading={updatingLoading}
+            >
               Update
             </Button>
           </div>

@@ -7,9 +7,7 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import {
-  useGetAllCategoryQuery,
   useGetAllProductsQuery,
-  useGetSingleCategoryQuery,
   useProductDeleteMutation,
 } from "../../Features/Api/exclusiveApi.js";
 import ProductListSkeliton from "../Skelitons/ProductListSkeliton.jsx";

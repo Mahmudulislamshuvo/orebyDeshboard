@@ -120,10 +120,19 @@ export const exclusiveApi = createApi({
       query: (id) => `product/${id}`,
       providesTags: ["product"],
     }),
+    UpdateProduct: builder.mutation({
+      query: ({ data, id }) => ({
+        url: `product/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["product"],
+    }),
   }),
 });
 
 export const {
+  useUpdateProductMutation,
   useGetSingleProductQuery,
   useProductDeleteMutation,
   useGetAllProductsQuery,
