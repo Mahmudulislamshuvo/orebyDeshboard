@@ -1,14 +1,80 @@
-import React from "react";
-import { useSingleOrderQuery } from "../../Features/Api/exclusiveApi";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  useSingleOrderQuery,
+  useUpdateStatusMutation,
+} from "../../Features/Api/exclusiveApi";
+import { useNavigate, useParams } from "react-router-dom";
+import OrderDetailsSkeleton from "../Skelitons/SingleOrderSkeliton";
+import { axiosInstance } from "../../Features/Api/axiosInstance.js";
+import { SuccessToast } from "../../utils/Toastify.js";
 
 const OrderDetails = () => {
+  const naviagate = useNavigate();
   const { id } = useParams();
   const {
     isLoading: SignleOrderLoading,
     data: SingleOrderData,
     isError: singleOrderError,
   } = useSingleOrderQuery(id);
+  const [updateStatus, { isLoading: updateStatusLoading }] =
+    useUpdateStatusMutation();
+
+  const [status, setStatus] = useState("");
+  const [showButton, setShowButton] = useState(false);
+
+  // handle status state undefinde problem
+  useEffect(() => {
+    if (SingleOrderData?.data?.orderStatus) {
+      setStatus(SingleOrderData.data.orderStatus);
+    }
+  }, [SingleOrderData?.data?.orderStatus]);
+
+  if (SignleOrderLoading) {
+    return <OrderDetailsSkeleton />;
+  }
+
+  const handleChange = (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);
+    if (newStatus !== SingleOrderData?.data?.orderStatus) {
+      setShowButton(true);
+    } else {
+      setShowButton(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      // const response = await axiosInstance.put(
+      //   `order/status/${id}`,
+      //   {
+      //     orderStatus: status,
+      //   },
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+
+      // if (response.status === 200) {
+      //   setShowButton(false);
+      //   SuccessToast(response.data.message);
+      //   naviagate("/order");
+      // }
+      const response = await updateStatus({
+        data: { orderStatus: status },
+        id: id,
+      });
+      if (response?.data?.data) {
+        setShowButton(false);
+        SuccessToast(response.data.message);
+        naviagate("/order");
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
 
   return (
     <div>
@@ -142,38 +208,61 @@ const OrderDetails = () => {
                   </p>
                 </div>
               </div>
+              {/* status design */}
               <div className="flex flex-col justify-center px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
                 <h3 className="text-xl dark:text-white font-semibold leading-5 text-gray-800">
-                  Shipping
+                  Status of this Order
                 </h3>
                 <div className="flex justify-between items-start w-full">
-                  <div className="flex justify-center items-center space-x-4">
-                    <div className="w-8 h-8">
-                      <img
-                        className="w-full h-full"
-                        alt="logo"
-                        src="https://i.ibb.co/L8KSdNQ/image-3.png"
-                      />
-                    </div>
-                    <div className="flex flex-col justify-start items-center">
-                      <p className="text-lg leading-6 dark:text-white font-semibold text-gray-800">
-                        DPD Delivery
-                        <br />
-                        <span className="font-normal">
-                          Delivery with 24 Hours
-                        </span>
-                      </p>
-                    </div>
+                  <div className="mt-4">
+                    <label htmlFor="status" className="mr-2 text-lg">
+                      Order Status:
+                    </label>
+                    <select
+                      id="status"
+                      value={status}
+                      onChange={handleChange}
+                      className={
+                        status == "pending"
+                          ? "p-2 border border-gray-300 rounded text-[#FFA500]"
+                          : status == "cancel"
+                          ? "p-2 border border-gray-300 rounded text-red-500"
+                          : status == "processing"
+                          ? "p-2 border border-gray-300 rounded text-blue-500"
+                          : "p-2 border border-gray-300 rounded text-green-500"
+                      }
+                    >
+                      <option
+                        value="pending"
+                        style={{ color: "rgba(255, 165, 0, 0.8)" }}
+                      >
+                        Pending
+                      </option>
+                      <option value="cancel" className="text-red-500">
+                        Cancel
+                      </option>
+                      <option value="processing" className="text-blue-500">
+                        Processing
+                      </option>
+                      <option value="delivered" className="text-green-500">
+                        Delivered
+                      </option>
+                    </select>
                   </div>
-                  <p className="text-lg font-semibold leading-6 dark:text-white text-gray-800">
-                    $8.00
-                  </p>
+                  {showButton && (
+                    <button
+                      onClick={handleUpdate}
+                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                    >
+                      Update
+                    </button>
+                  )}
                 </div>
-                <div className="w-full flex justify-center items-center">
+                {/* <div className="w-full flex justify-center items-center">
                   <button className="hover:bg-black dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 py-5 w-96 md:w-full bg-gray-800 text-base font-medium leading-4 text-white">
                     View Carrier Details
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

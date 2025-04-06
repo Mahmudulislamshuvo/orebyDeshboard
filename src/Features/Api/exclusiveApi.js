@@ -5,7 +5,7 @@ export const exclusiveApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
   }),
-  tagTypes: ["banner", "category", "subcategory", "product"],
+  tagTypes: ["banner", "category", "subcategory", "product", "order"],
   endpoints: (builder) => ({
     uploadBanner: builder.mutation({
       query: (data) => ({
@@ -130,14 +130,24 @@ export const exclusiveApi = createApi({
     }),
     GetAllOrders: builder.query({
       query: () => "/order",
+      providesTags: ["order"],
     }),
     SingleOrder: builder.query({
       query: (id) => `/order/single/${id}`,
+    }),
+    UpdateStatus: builder.mutation({
+      query: ({ data, id }) => ({
+        url: `/order/status/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["order"],
     }),
   }),
 });
 
 export const {
+  useUpdateStatusMutation,
   useSingleOrderQuery,
   useGetAllOrdersQuery,
   useUpdateProductMutation,
