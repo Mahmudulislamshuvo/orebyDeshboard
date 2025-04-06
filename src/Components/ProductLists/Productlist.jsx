@@ -125,8 +125,8 @@ const Productlist = () => {
                     className="h-[150px] rounded-[15px] object-fit-cover"
                   />
                 </td>
-                <td className="px-6 py-4">{items.category.name}</td>
-                <td className="px-6 py-4">{items.subCategory.name}</td>
+                <td className="px-6 py-4">{items?.category?.name}</td>
+                <td className="px-6 py-4">{items?.subCategory?.name}</td>
                 <td className="px-6 py-4">{items.price}</td>
                 <td className="px-6 py-4 text-center">
                   <div className=" flex gap-x-5 justify-center text-center">

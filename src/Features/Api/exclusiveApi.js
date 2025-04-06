@@ -128,10 +128,18 @@ export const exclusiveApi = createApi({
       }),
       invalidatesTags: ["product"],
     }),
+    GetAllOrders: builder.query({
+      query: () => "/order",
+    }),
+    SingleOrder: builder.query({
+      query: (id) => `/order/single/${id}`,
+    }),
   }),
 });
 
 export const {
+  useSingleOrderQuery,
+  useGetAllOrdersQuery,
   useUpdateProductMutation,
   useGetSingleProductQuery,
   useProductDeleteMutation,
