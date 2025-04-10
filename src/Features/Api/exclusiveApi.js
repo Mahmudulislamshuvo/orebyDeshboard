@@ -143,10 +143,14 @@ export const exclusiveApi = createApi({
       }),
       invalidatesTags: ["order"],
     }),
+    GetAllEmails: builder.query({
+      query: () => "/contact",
+    }),
   }),
 });
 
 export const {
+  useGetAllEmailsQuery,
   useUpdateStatusMutation,
   useSingleOrderQuery,
   useGetAllOrdersQuery,

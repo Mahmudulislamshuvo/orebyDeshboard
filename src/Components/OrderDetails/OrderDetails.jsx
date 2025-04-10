@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import OrderDetailsSkeleton from "../Skelitons/SingleOrderSkeliton";
 import { axiosInstance } from "../../Features/Api/axiosInstance.js";
 import { SuccessToast } from "../../utils/Toastify.js";
+import { Button } from "@material-tailwind/react";
 
 const OrderDetails = () => {
   const naviagate = useNavigate();
@@ -65,8 +66,9 @@ const OrderDetails = () => {
       const response = await updateStatus({
         data: { orderStatus: status },
         id: id,
-      });
-      if (response?.data?.data) {
+      }).unwrap();
+
+      if (response?.data) {
         setShowButton(false);
         SuccessToast(response.data.message);
         naviagate("/order");
@@ -75,6 +77,8 @@ const OrderDetails = () => {
       console.error("Error updating status:", error);
     }
   };
+
+  console.log(status);
 
   return (
     <div>
@@ -250,12 +254,13 @@ const OrderDetails = () => {
                     </select>
                   </div>
                   {showButton && (
-                    <button
+                    <Button
+                      loading={updateStatusLoading}
                       onClick={handleUpdate}
                       className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
                     >
                       Update
-                    </button>
+                    </Button>
                   )}
                 </div>
                 {/* <div className="w-full flex justify-center items-center">

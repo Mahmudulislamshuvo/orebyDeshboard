@@ -20,6 +20,7 @@ import Login from "./Components/Login/Login";
 import Registration from "./Components/Registration/Registration";
 import View from "./Components/CommonComponents/View";
 import EditProduct from "./Components/ProductLists/EditProduct";
+import Profile from "./Components/Profile/Profile";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
         <Route path="/" element={<WelcomeText />}></Route>
         <Route path="/view/:id" element={<View />}></Route>
         <Route path="/editproduct/:id" element={<EditProduct />}></Route>
+        <Route path="/profile" element={<Profile />}></Route>
       </Route>
       <Route path="/login" element={<Login />}></Route>
       <Route path="/signup" element={<Registration />}></Route>
