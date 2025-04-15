@@ -78,7 +78,7 @@ const OrderDetails = () => {
     }
   };
 
-  console.log(status);
+  // console.log(status);
 
   return (
     <div>

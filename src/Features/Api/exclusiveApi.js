@@ -5,7 +5,14 @@ export const exclusiveApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BACKEND_URL,
   }),
-  tagTypes: ["banner", "category", "subcategory", "product", "order"],
+  tagTypes: [
+    "banner",
+    "category",
+    "subcategory",
+    "product",
+    "order",
+    "singleOrder",
+  ],
   endpoints: (builder) => ({
     uploadBanner: builder.mutation({
       query: (data) => ({
@@ -134,6 +141,7 @@ export const exclusiveApi = createApi({
     }),
     SingleOrder: builder.query({
       query: (id) => `/order/single/${id}`,
+      providesTags: ["singleOrder"],
     }),
     UpdateStatus: builder.mutation({
       query: ({ data, id }) => ({
@@ -141,7 +149,7 @@ export const exclusiveApi = createApi({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["order"],
+      invalidatesTags: ["order", "singleOrder"],
     }),
     GetAllEmails: builder.query({
       query: () => "/contact",

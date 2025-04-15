@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { Typography, Input, Button } from "@material-tailwind/react";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/solid";
 import { useForm } from "react-hook-form";
+import { axiosInstance } from "../../Features/Api/axiosInstance";
+import { SuccessToast } from "../../utils/Toastify";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
 
@@ -16,8 +20,29 @@ const Login = () => {
   } = useForm();
 
   // handle form submission
-  const handleLogin = (data) => {
-    console.log(data);
+  const handleLogin = async (data) => {
+    try {
+      console.log(data);
+      const loginData = await axiosInstance.post(
+        "/admin/login",
+        {
+          username: data.username,
+          password: data.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (loginData.statusText === "OK") {
+        SuccessToast(loginData.data.message);
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("error from Deshboard Login", error);
+    }
   };
   return (
     <div>
